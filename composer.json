@@ -1,0 +1,49 @@
+{
+  "name": "mmerlijn/laravel-salt",
+    "description": "All tools for salt in one package",
+  "license": "MIT",
+  "type": "library",
+  "require-dev": {
+    "laravel/framework": "13.x-dev",
+    "pestphp/pest": "4.x-dev",
+    "pestphp/pest-plugin-laravel": "4.x-dev",
+    "orchestra/testbench": "11.x-dev"
+  },
+  "require": {
+    "mmerlijn/msg-repo": "~3.8",
+    "php": "^8.5",
+    "illuminate/support": "^13.0",
+    "ext-dom": "*",
+    "ext-curl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "mmerlijn\\LaravelSalt\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "mmerlijn\\LaravelSalt\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "mmerlijn\\LaravelSalt\\LaravelSaltServiceProvider"
+      ]
+    }
+  },
+  "authors": [
+    {
+      "name": "Menno",
+      "email": "menno@mmerlijn.nl"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
+}
