@@ -27,6 +27,10 @@ class LaravelSaltServiceProvider extends ServiceProvider
         $this->app->singleton(ToastInterface::class, function ($app) {
             return new Toast();
         });
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/laravel_salt.php',
+            'laravel_salt'
+        );
     }
 
     /**
