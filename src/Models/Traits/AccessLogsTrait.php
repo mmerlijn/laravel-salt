@@ -2,7 +2,8 @@
 
 namespace mmerlijn\LaravelSalt\Models\Traits;
 
-use App\Models\Log\AccessLog;
+
+use mmerlijn\LaravelSalt\Models\AccessLog;
 
 trait AccessLogsTrait
 {
