@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9eca2189ac3bcc92ee7820ed879e3129",
+    "content-hash": "7022166ac720d9d6c3b9d75f4d7ba698",
     "packages": [
         {
             "name": "brick/math",
@@ -1961,6 +1961,120 @@
                 }
             ],
             "time": "2026-03-08T20:05:35+00:00"
+        },
+        {
+            "name": "mmerlijn/laravel-helpers",
+            "version": "v3.1.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mmerlijn/laravel-helpers.git",
+                "reference": "06ec917f83dc3751135a6af0a19475148f733a73"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mmerlijn/laravel-helpers/zipball/06ec917f83dc3751135a6af0a19475148f733a73",
+                "reference": "06ec917f83dc3751135a6af0a19475148f733a73",
+                "shasum": ""
+            },
+            "require": {
+                "mmerlijn/msg-repo": "~3.3",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "laravel/framework": "^12.0.x-dev",
+                "orchestra/testbench": "^10.x-dev",
+                "pestphp/pest": "^4.0.0"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "mmerlijn\\laravelHelpers\\LaravelHelpersServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "mmerlijn\\laravelHelpers\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "M.Merlijn",
+                    "email": "menno@mmerlijn.nl"
+                }
+            ],
+            "description": "Laravel helpers: casts and facades",
+            "support": {
+                "issues": "https://github.com/mmerlijn/laravel-helpers/issues",
+                "source": "https://github.com/mmerlijn/laravel-helpers/tree/v3.1.6"
+            },
+            "time": "2026-01-28T08:36:18+00:00"
+        },
+        {
+            "name": "mmerlijn/laravel-postcode",
+            "version": "v3.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mmerlijn/laravel-postcode.git",
+                "reference": "c893b1bf1b4f2febc85913c3a84684c78e4d38bd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mmerlijn/laravel-postcode/zipball/c893b1bf1b4f2febc85913c3a84684c78e4d38bd",
+                "reference": "c893b1bf1b4f2febc85913c3a84684c78e4d38bd",
+                "shasum": ""
+            },
+            "require": {
+                "mmerlijn/laravel-helpers": "^3.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "laravel/framework": "^12.x-dev",
+                "orchestra/testbench": "10.x-dev",
+                "pestphp/pest": "4.x-dev"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "mmerlijn\\laravelPostcode\\LaravelPostcodeServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "mmerlijn\\laravelPostcode\\": "src/",
+                    "mmerlijn\\laravelPostcode\\Database\\Seeders\\": "database/seeders/",
+                    "mmerlijn\\laravelPostcode\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "M.Merlijn",
+                    "email": "menno@mmerlijn.nl"
+                }
+            ],
+            "description": "Laravel postcode nl helper package",
+            "support": {
+                "issues": "https://github.com/mmerlijn/laravel-postcode/issues",
+                "source": "https://github.com/mmerlijn/laravel-postcode/tree/v3.0.3"
+            },
+            "time": "2025-11-21T06:42:10+00:00"
         },
         {
             "name": "mmerlijn/msg-repo",
@@ -9993,7 +10107,9 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.5"
+        "php": "^8.5",
+        "ext-dom": "*",
+        "ext-curl": "*"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"

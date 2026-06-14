@@ -3,16 +3,18 @@
 namespace mmerlijn\LaravelSalt\Actions;
 
 
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use mmerlijn\LaravelSalt\Helpers\Traits\FormatTrait;
 use mmerlijn\LaravelSalt\Models\Patient;
+use mmerlijn\LaravelSalt\Models\RequesterConvertor;
 use mmerlijn\LaravelSalt\Rules\Bsn;
 use mmerlijn\LaravelSalt\Rules\Dob;
 use mmerlijn\msgRepo\Address;
 use mmerlijn\msgRepo\Enums\PatientSexEnum;
 use mmerlijn\msgRepo\Name;
 use mmerlijn\msgRepo\Patient as PatientRepo;
-
+use mmerlijn\laravelPostcode\Models\Postcode;
 
 class FindOrCreatePatient
 {
@@ -128,11 +130,13 @@ class FindOrCreatePatient
         if ($r = RequesterConvertor::requester($patientArray['last_requester'] ?? '')) {
             $patientArray['last_requester'] = $r->agbcode;
         }
-
-        $gp = Caregiver::getGP($patientArray['last_requester'] ?? null, $patientArray['general_practitioner'] ?? null);
-        if ($gp) {
-            $patientArray['general_practitioner'] = $gp->agbcode;
-        } else {
+        if(!$patientArray['last_requester']){
+            unset($patientArray['last_requester']);
+        }
+        if(!$patientArray['last_organization']){
+            unset($patientArray['last_organization']);
+        }
+        if(!$patientArray['general_practitioner']){
             unset($patientArray['general_practitioner']);
         }
 
