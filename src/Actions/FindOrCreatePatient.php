@@ -130,13 +130,13 @@ class FindOrCreatePatient
         if ($r = RequesterConvertor::requester($patientArray['last_requester'] ?? '')) {
             $patientArray['last_requester'] = $r->agbcode;
         }
-        if(!$patientArray['last_requester']){
+        if(!$patientArray['last_requester']??null){
             unset($patientArray['last_requester']);
         }
-        if(!$patientArray['last_organization']){
+        if(!$patientArray['last_organization']??null){
             unset($patientArray['last_organization']);
         }
-        if(!$patientArray['general_practitioner']){
+        if(!$patientArray['general_practitioner']??null){
             unset($patientArray['general_practitioner']);
         }
 
