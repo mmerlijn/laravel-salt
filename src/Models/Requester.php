@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use mmerlijn\LaravelSalt\Http\Resources\Requester\RequesterResource;
+use mmerlijn\LaravelSalt\Jobs\GetCaregiverJob;
 use mmerlijn\LaravelSalt\Models\Traits\CanHaveNotesTrait;
 use mmerlijn\LaravelSalt\Observers\RequesterObserver;
 use mmerlijn\msgRepo\Contact;
@@ -48,7 +49,7 @@ class Requester extends Model
 
     }
 
-    public static function add(Contact|Organization $requester, VektisType $type = VektisType::ZORGVERLENER): void
+    public static function add(Contact $requester, VektisType $type = VektisType::ZORGVERLENER): void
     {
         if (!$requester->agbcode) {
             return;
@@ -62,14 +63,11 @@ class Requester extends Model
         $r_new->agbcode = $requester->agbcode;
         if ($requester instanceof Contact) {
             $r_new->name = $requester->name;
-            $r_new->vektis_name = $requester->name->getLastnames();
-        } else {//Organisation
-            $r_new->vektis_name = $requester->name;
-            $r_new->name = new Name(name: $requester->name);
         }
-        $r_new->type = $type;
         $r_new->save();
-        return;
+        if(config('laravel_salt.vektis',false)){
+            GetCaregiverJob::dispatch($requester->agbcode,VektisType::ZORGVERLENER);
+        }
     }
 
     public function organizations(): BelongsToMany
