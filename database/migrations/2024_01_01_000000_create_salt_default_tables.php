@@ -80,14 +80,21 @@ return new class extends Migration
             $table->enum('type', VektisType::database())->default('ZORGVERLENER');
             $table->enum('sex', PatientSexEnum::database())->comment('F->female, M->Male, X->other')->nullable();
             $table->string('name');
-            $table->enum('sex', PatientSexEnum::database())->comment('F->female, M->Male, X->other');
             $table->string('initials', 20)->nullable();
             $table->string('lastname', 80)->nullable();
             $table->string('own_lastname', 80);
             $table->string('prefix', 20)->nullable();
             $table->string('own_prefix', 20)->nullable();
-            $this->address($table);
-            $this->contact($table);
+            $table->string('postcode', 7)->nullable();
+            $table->string('city', 100)->nullable();
+            $table->string('phone', 20)->nullable();
+            $table->string('street', 100)->nullable();
+            $table->string('building', 20)->nullable();
+            $table->string('postbus', 10)->nullable();
+            $table->string('extra_address_line', 100)->nullable();
+            $table->string('email', 255)->nullable();
+            $table->string('fax', 20)->nullable();
+            $table->string('mobile', 20)->nullable();
             $table->enum('is_gp', YesNoEnum::database())->default('N');
             $table->json('qualifications')->nullable();
             $table->json('owners')->nullable()->comment('array of agbcodes');
@@ -97,7 +104,6 @@ return new class extends Migration
             $table->softDeletes();
             $table->index(['deleted_at', 'agbcode', 'own_lastname'], 'v_reqz_ind');
         });
-
 
         Schema::create('requester_convertors', function (Blueprint $table) {
             $table->smallIncrements('id');
