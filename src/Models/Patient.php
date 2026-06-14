@@ -2,6 +2,7 @@
 
 namespace mmerlijn\LaravelSalt\Models;
 
+use Database\Factories\PatientFactory;
 use mmerlijn\LaravelSalt\Http\Resources\Patient\PatientResource;
 
 
@@ -361,6 +362,9 @@ class Patient extends Model
         return null;
     }
 
-
+    protected static function newFactory(): PatientFactory
+    {
+        return PatientFactory::new();
+    }
 
 }
