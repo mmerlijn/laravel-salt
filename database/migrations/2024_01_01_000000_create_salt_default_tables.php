@@ -149,7 +149,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('subject_id');
             $table->enum('subject_type', NoteSubjectEnum::database());
-            $table->enum('type', NoteTypeEnum::database())->default('');
+            $table->enum('type', NoteTypeEnum::database())->default(NoteTypeEnum::_);
             $table->text('note');
             $table->unsignedMediumInteger('created_by')->default(500);
             $table->timestamp('delete_after');
