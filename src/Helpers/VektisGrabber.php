@@ -203,28 +203,27 @@ class VektisGrabber
             $data['relations'] = $relations;
             try {
                 //update the Organization / Requester
-                if ($data['type'] === VektisType::ONDERNEMING or $data['type'] === VektisType::VESTIGING) {
-                    Organization::updateOrCreate([
+                    $requester = Requester::updateOrCreate([
                         'agbcode' => $data['agbcode'],
+                        'type' => $data['type'],
                     ], [
                         'qualifications' => $data['qualifications'],
                         'is_gp' => $this->isGp($data['qualifications']) ? YesNoEnum::YES : YesNoEnum::NO,
-                        'address' => $data['address'],
+
                         'name' => $data['name'],
                         'phone' => new Phone($data['phone'] ?? null),
                         'email' => $data['email'] ?? null,
                         'started_at' => $data['start'] ?? null,
                     ]);
-                } elseif ($data['type'] === VektisType::ZORGVERLENER) {
-                    Requester::updateOrCreate([
-                        'agbcode' => $data['agbcode'],
-                    ], [
-                        'qualifications' => $data['qualifications'],
-                        'is_gp' => $this->isGp($data['qualifications']) ? YesNoEnum::YES : YesNoEnum::NO,
-                        'name' => new Name(name: $data['name']),
-                        'sex' => $data['sex'],
-                    ]);
-                }
+                    if($data['address']??null) {
+                        $requester->address = $data['address'];
+                    }
+                    if($data['sex']??null){
+                        $requester->sex = $data['sex'];
+                    }
+                    $requester->name = new Name(name:$data['name']);
+                    $requester->save();
+
             } catch (\Exception|\Error $e) {
                 logger("VektisGrabber: Error updating database for AGBcode: $agbcode - " . $e->getMessage());
             }

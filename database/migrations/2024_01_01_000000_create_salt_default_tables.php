@@ -10,6 +10,7 @@ use mmerlijn\LaravelSalt\Enums\NoteTypeEnum;
 use mmerlijn\LaravelSalt\Enums\PatientActionsEnum;
 use mmerlijn\msgRepo\Enums\LangEnum;
 use mmerlijn\msgRepo\Enums\PatientSexEnum;
+use mmerlijn\msgRepo\Enums\VektisType;
 use mmerlijn\msgRepo\Enums\YesNoEnum;
 
 return new class extends Migration
@@ -74,29 +75,18 @@ return new class extends Migration
 
 
 
-        Schema::create('organizations', function (Blueprint $table) {
-            $table->string('agbcode', 8)->primary();
-            $table->string('name', 200)->nullable();
-            $this->address($table);
-            $this->contact($table);
-            $table->enum('is_gp', YesNoEnum::database())->default('N');
-            $table->json('qualifications')->nullable();
-            $table->json('owners')->nullable()->comment('array of agbcodes');
-            $table->timestamp('vektis_at')->nullable();
-            $table->timestamp('started_at')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
-            $table->index(['deleted_at', 'agbcode', 'name'], 'v_orgz_ind');
-        });
-
         Schema::create('requesters', function (Blueprint $table) {
             $table->string('agbcode', 8)->primary();
-            $table->enum('sex', \mmerlijn\msgRepo\Enums\PatientSexEnum::database())->comment('F->female, M->Male, X->other')->nullable();
-            $table->string('initials', 50)->nullable();
-            $table->string('prefix', 20)->nullable();
+            $table->enum('type', VektisType::database())->default('ZORGVERLENER');
+            $table->enum('sex', PatientSexEnum::database())->comment('F->female, M->Male, X->other')->nullable();
+            $table->string('name');
+            $table->enum('sex', PatientSexEnum::database())->comment('F->female, M->Male, X->other');
+            $table->string('initials', 20)->nullable();
             $table->string('lastname', 80)->nullable();
+            $table->string('own_lastname', 80);
+            $table->string('prefix', 20)->nullable();
             $table->string('own_prefix', 20)->nullable();
-            $table->string('own_lastname', 80)->nullable();
+            $this->address($table);
             $this->contact($table);
             $table->enum('is_gp', YesNoEnum::database())->default('N');
             $table->json('qualifications')->nullable();
