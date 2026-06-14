@@ -90,16 +90,27 @@ class Requester extends Model
 //        return $r_new;
 //    }
 
-    public function organizations(): BelongsToMany
+    public function related(): BelongsToMany
     {
-        return $this->belongsToMany(
-            Organization::class,
-            'organization_has_requester',
-            'requester_agbcode',
-            'organization_agbcode',
-            'agbcode',
-            'agbcode'
-        )->withTimestamps();
+        if($this->type == VektisType::ZORGVERLENER) {
+            return $this->belongsToMany(
+                Requester::class,
+                'organization_has_requester',
+                'requester_agbcode',
+                'organization_agbcode',
+                'agbcode',
+                'agbcode'
+            )->withTimestamps();
+        }else{
+            return $this->belongsToMany(
+                Requester::class,
+                'organization_has_requester',
+                'organization_agbcode',
+                'requester_agbcode',
+                'agbcode',
+                'agbcode'
+            )->withTimestamps();
+        }
     }
 
     //use for RequesterAPI

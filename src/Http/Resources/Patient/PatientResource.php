@@ -5,8 +5,7 @@ namespace mmerlijn\LaravelSalt\Http\Resources\Patient;
 
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use mmerlijn\LaravelSalt\Http\Resources\Requester\OrganizationResource;
-
+use mmerlijn\LaravelSalt\Http\Resources\Requester\RequesterResource;
 use mmerlijn\LaravelSalt\Models\Patient;
 
 /** @mixin Patient */
@@ -18,8 +17,8 @@ class PatientResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name->toArray(),
             'address' => $this->address->toArray(),
-            'requester' => $this->when($this->last_requester, OrganizationResource::make($this->requester)->resolve()), //RequesterResource::make($this->requester),
-            'gp' => $this->general_practitioner ? OrganizationResource::make($this->gp) : null,
+            'requester' => $this->when($this->last_requester, RequesterResource::make($this->requester)->resolve()), //RequesterResource::make($this->requester),
+            'gp' => $this->general_practitioner ? RequesterResource::make($this->gp) : null,
             'last_requester' => $this->last_requester,
             'last_organization' => $this->last_organization,
             'general_practitioner' => $this->general_practitioner,

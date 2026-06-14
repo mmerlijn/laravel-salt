@@ -70,8 +70,8 @@ use mmerlijn\msgRepo\Phone;
  * @property Carbon $email_verified_at
  * @property LangEnum $lang
  * @property string $general_practitioner
- * @property Organization $gp
- * @property Organization $organization
+ * @property Requester $gp
+ * @property Requester $organization
  * @property string $phone_note
  * @property string $email_ext
  * @property int $contact_id
@@ -167,7 +167,7 @@ class Patient extends Model
     }
     public function organization(): BelongsTo
     {
-        return $this->belongsTo(Organization::class, 'last_requester', 'agbcode')->withTrashed()->withDefault([
+        return $this->belongsTo(Requester::class, 'last_requester', 'agbcode')->withTrashed()->withDefault([
             'name' => 'Niet bekend',
             'agbcode' => '00000000',
         ]);
@@ -176,7 +176,7 @@ class Patient extends Model
 
     public function gp(): BelongsTo
     {
-        return $this->belongsTo(Organization::class, 'general_practitioner', 'agbcode')->withTrashed()->withDefault([
+        return $this->belongsTo(Requester::class, 'general_practitioner', 'agbcode')->withTrashed()->withDefault([
             'name' => 'Niet bekend',
             'agbcode' => '00000000',
         ]);

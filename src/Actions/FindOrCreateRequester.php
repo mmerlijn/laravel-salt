@@ -6,7 +6,6 @@ namespace mmerlijn\LaravelSalt\Actions;
 use Illuminate\Support\Facades\Validator;
 use mmerlijn\LaravelSalt\Helpers\Traits\FormatTrait;
 use mmerlijn\LaravelSalt\Jobs\GetCaregiverJob;
-use mmerlijn\LaravelSalt\Models\Organization;
 use mmerlijn\LaravelSalt\Models\Requester;
 use mmerlijn\LaravelSalt\Models\RequesterConvertor;
 use mmerlijn\msgRepo\Address;
@@ -25,7 +24,7 @@ class FindOrCreateRequester
             $requesterArray = [
                 'type' => VektisType::ZORGVERLENER,
                 'agbcode' => $data->agbcode,
-                'name'=>$data->name->getNameReverse(),
+                'vektis_name'=> $data->name->getNameReverse(),
                 'initials' => $data->name->initials,
                 'lastname' => $data->name->lastname,
                 'prefix' => $data->name->prefix,
@@ -37,7 +36,7 @@ class FindOrCreateRequester
             $requesterArray = [
                 'type' => VektisType::ONDERNEMING,
                 'agbcode' => $data->agbcode,
-                'name' => $data->name,
+                'vektis_name' => $data->name,
                 'phone' => $data->phone?->number ?? null,
                 'postcode' => $data->address?->postcode,
                 'building' => $data->address?->building,
@@ -50,6 +49,10 @@ class FindOrCreateRequester
             if ($data['name'] ?? null and $data['name'] instanceof Name) {
                 $data = array_merge($data, $data['name']->toArray());
                 unset($data['name']);
+            }
+            if ($data['address'] ?? null and $data['address'] instanceof Address) {
+                $data = array_merge($data, $data['address']->toArray());
+                unset($data['address']);
             }
             $requesterArray = $data;
 

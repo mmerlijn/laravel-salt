@@ -11,8 +11,8 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $from_agbcode
  * @property string $to_agbcode
- * @property Requester|Organization $to
- * @property Requester|Organization $from
+ * @property Requester $to
+ * @property Requester $from
  * @property Carbon $from_date
  * @property string $name
  */
@@ -39,12 +39,12 @@ class RequesterConvertor extends Model
 
     public function from(): BelongsTo
     {
-        return $this->belongsTo(Organization::class, 'from_agbcode', 'agbcode')->withTrashed();
+        return $this->belongsTo(Requester::class, 'from_agbcode', 'agbcode')->withTrashed();
     }
 
     public function to(): BelongsTo
     {
-        return $this->belongsTo(Organization::class, 'to_agbcode', 'agbcode')->withTrashed();
+        return $this->belongsTo(Requester::class, 'to_agbcode', 'agbcode')->withTrashed();
     }
 
     public static function requester(string $agbcode): ?Requester

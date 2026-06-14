@@ -73,16 +73,14 @@ return new class extends Migration
             $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');
         });
 
-
-
         Schema::create('requesters', function (Blueprint $table) {
             $table->string('agbcode', 8)->primary();
             $table->enum('type', VektisType::database())->default('ZORGVERLENER');
             $table->enum('sex', PatientSexEnum::database())->comment('F->female, M->Male, X->other')->nullable();
-            $table->string('name');
+            $table->string('vektis_name');
             $table->string('initials', 20)->nullable();
             $table->string('lastname', 80)->nullable();
-            $table->string('own_lastname', 80);
+            $table->string('own_lastname', 80)->nullable();
             $table->string('prefix', 20)->nullable();
             $table->string('own_prefix', 20)->nullable();
             $table->string('postcode', 7)->nullable();

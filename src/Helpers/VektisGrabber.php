@@ -5,8 +5,8 @@ namespace mmerlijn\LaravelSalt\Helpers;
 use Carbon\Carbon;
 use DOMDocument;
 use DOMXPath;
+use mmerlijn\LaravelSalt\Actions\FindOrCreateRequester;
 use mmerlijn\LaravelSalt\Helpers\Traits\VektisQualificationsTrait;
-use mmerlijn\LaravelSalt\Models\Organization;
 use mmerlijn\LaravelSalt\Models\Requester;
 use mmerlijn\msgRepo\Address;
 use mmerlijn\msgRepo\Enums\PatientSexEnum;
@@ -203,26 +203,7 @@ class VektisGrabber
             $data['relations'] = $relations;
             try {
                 //update the Organization / Requester
-                    $requester = Requester::updateOrCreate([
-                        'agbcode' => $data['agbcode'],
-                        'type' => $data['type'],
-                    ], [
-                        'qualifications' => $data['qualifications'],
-                        'is_gp' => $this->isGp($data['qualifications']) ? YesNoEnum::YES : YesNoEnum::NO,
-
-                        'name' => $data['name'],
-                        'phone' => new Phone($data['phone'] ?? null),
-                        'email' => $data['email'] ?? null,
-                        'started_at' => $data['start'] ?? null,
-                    ]);
-                    if($data['address']??null) {
-                        $requester->address = $data['address'];
-                    }
-                    if($data['sex']??null){
-                        $requester->sex = $data['sex'];
-                    }
-                    $requester->name = new Name(name:$data['name']);
-                    $requester->save();
+                    $requester = new FindOrCreateRequester()($data,true);
 
             } catch (\Exception|\Error $e) {
                 logger("VektisGrabber: Error updating database for AGBcode: $agbcode - " . $e->getMessage());

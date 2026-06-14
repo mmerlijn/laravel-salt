@@ -23,6 +23,7 @@ trait NameModelTrait
             set: function (Name $name) {
                 $name->format();
                 return [
+                    //'name' => $name->name ?: $name->getName(),
                     'initials' => $name->initials ?: null,
                     'lastname' => $name->lastname ?: null,
                     'prefix' => $name->prefix ?: null,
