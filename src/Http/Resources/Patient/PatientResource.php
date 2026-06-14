@@ -33,7 +33,7 @@ class PatientResource extends JsonResource
             'uzovi' => $this->uzovi,
             'policy_nr' => $this->policy_nr,
             'labels' => $this->labels,
-            'bsn' => auth()?->user()?->can('patient_bsn') ? $this->bsn : 'geen toegang',
+            'bsn' => $this->bsn,// auth()?->user()?->can('patient_bsn') ? $this->bsn : 'geen toegang',
             'has_bsn' => (bool)$this->bsn,
             'sex' => $this->sex->value,
             'lang' => $this->lang,

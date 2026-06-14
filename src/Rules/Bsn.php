@@ -23,6 +23,7 @@ class Bsn implements ValidationRule
 
             if (!$this->strict) {
                 $aInvalid = ['111111110', '999999990']; //9x0 wel toestaan
+                if (in_array($bsn, ['000000000','999999999'])) {return;}
             }
             $bsn = strlen($bsn) < 9 ? '0' . $bsn : $bsn;
             if (strlen($bsn) != 9 || !ctype_digit($bsn) || in_array($bsn, $aInvalid)) {
