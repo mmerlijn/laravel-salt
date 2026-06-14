@@ -4,6 +4,7 @@ namespace mmerlijn\LaravelSalt\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use mmerlijn\LaravelSalt\Enums\CounterEnum;
 
 /**
  * @property int $counter
@@ -18,6 +19,12 @@ class Counter extends Model
     protected $table = 'tool_counters';
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'type' => CounterEnum::class,
+        ];
+    }
     public function getNewFilename(): array
     {
         $this->counter++;
@@ -45,4 +52,16 @@ class Counter extends Model
         return $this->counter;
     }
 
+
+    public static function makeId(CounterEnum $type): string
+    {
+        $id = '';
+        $counter = self::whereType($type)->first();
+
+        $id .= $counter->prefix;
+        $id .= substr($counter->counter, -1 * $counter->size);
+        $counter->counter++;
+        $counter->save();
+        return $id;
+    }
 }

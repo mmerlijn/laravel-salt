@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use mmerlijn\LaravelSalt\Enums\CounterEnum;
 use mmerlijn\LaravelSalt\Enums\LockTypeEnum;
 use mmerlijn\LaravelSalt\Enums\NoteSubjectEnum;
 use mmerlijn\LaravelSalt\Enums\NoteTypeEnum;
@@ -141,6 +142,7 @@ return new class extends Migration
             $table->bigInteger('counter')->unsigned()->default(1000000000);
             $table->string('counter_text')->default('');
             $table->string('extension', 5)->nullable();
+            $table->enum('type', CounterEnum::database())->default(CounterEnum::SALT_REQUEST_NR);
             $table->timestamps();
         });
         Schema::create('notes', function (Blueprint $table) {

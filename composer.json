@@ -10,7 +10,7 @@
     "orchestra/testbench": "11.x-dev"
   },
   "require": {
-    "mmerlijn/msg-repo": "~3.8",
+    "mmerlijn/msg-repo": "~3.9",
     "php": "^8.5",
     "illuminate/support": "^13.0",
     "ext-dom": "*",
