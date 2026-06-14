@@ -43,19 +43,19 @@ class Requester extends Model
         'started_at' => 'datetime',
     ];
 
-    public static function getRequesterByAgbcode(string $agbcode)
+    public static function getRequesterByAgbcode(string $agbcode):?Requester
     {
         return Requester::withTrashed()->find(trim($agbcode));
 
     }
 
-    public static function add(Contact $requester, VektisType $type = VektisType::ZORGVERLENER): void
+    public static function add(Contact $requester, VektisType $type = VektisType::ZORGVERLENER): ?Requester
     {
         if (!$requester->agbcode) {
-            return;
+            return null;
         }
-        if (self::getRequesterByAgbcode($requester->agbcode)) { //bestaat al
-            return;
+        if($r = self::getRequesterByAgbcode($requester->agbcode)){
+            return $r;
         }
         logger($requester->agbcode);
         logger(Requester::withTrashed()->find($requester->agbcode));
@@ -65,9 +65,11 @@ class Requester extends Model
             $r_new->name = $requester->name;
         }
         $r_new->save();
+
         if(config('laravel_salt.vektis',false)){
             GetCaregiverJob::dispatch($requester->agbcode,VektisType::ZORGVERLENER);
         }
+        return $r_new;
     }
 
     public function organizations(): BelongsToMany

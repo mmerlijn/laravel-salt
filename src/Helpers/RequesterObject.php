@@ -31,12 +31,8 @@ class RequesterObject
         if($requester) {
             $this->requester = match ($requester::class) {
                 Requester::class => $requester,
-                Contact::class => Requester::firstOrCreate([
-                    'agbcode' => $requester->agbcode,
-                ],[
-                    'name' => $requester->name,
 
-                ])
+                Contact::class => Requester::add($requester)
             };
         }
         if($this->organization){
