@@ -18,14 +18,7 @@ class RequesterObject
         if($organization) {
             $this->organization = match ($organization::class) {
                 Organization::class => $organization,
-                \mmerlijn\msgRepo\Organization::class => Organization::firstOrCreate([
-                    'agbcode' => $organization->agbcode,
-                ], [
-                    'name' => $organization->name,
-                    'email' => $organization->email,
-                    'phone' => $organization->phone,
-                    'address' => $organization->address,
-                ]),
+                \mmerlijn\msgRepo\Organization::class => Organization::add($organization),
             };
         }
         if($requester) {

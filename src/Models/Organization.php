@@ -6,19 +6,25 @@ use Illuminate\Database\Eloquent\Attributes\UseResource;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 use mmerlijn\LaravelSalt\Http\Resources\Requester\OrganizationResource;
+use mmerlijn\LaravelSalt\Jobs\GetCaregiverJob;
+use mmerlijn\LaravelSalt\Models\Traits\AddressModelTrait;
 use mmerlijn\LaravelSalt\Models\Traits\CanHaveNotesTrait;
 use mmerlijn\LaravelSalt\Models\Traits\PhoneModelTrait;
 use mmerlijn\LaravelSalt\Observers\OrganizationObserver;
+use mmerlijn\msgRepo\Address;
+use mmerlijn\msgRepo\Enums\VektisType;
 use mmerlijn\msgRepo\Enums\YesNoEnum;
 use mmerlijn\msgRepo\HasAddressTrait;
+use mmerlijn\msgRepo\Name;
 use mmerlijn\msgRepo\Phone;
 
 /**
  * @property string $initials
  * @property string $agbcode
- * @property string $vektis_name
  * @property mixed $building_nr
  * @property string $name
+ * @property Address $address
+ * @property Phone $phone
  * @property YesNoEnum $is_gp
  * @property array $owners
  * @property array $qualifications
@@ -27,7 +33,7 @@ use mmerlijn\msgRepo\Phone;
 #[ObservedBy(OrganizationObserver::class), UseResource(OrganizationResource::class)]
 class Organization extends Model
 {
-    use HasAddressTrait,CanHaveNotesTrait, PhoneModelTrait;
+    use HasAddressTrait,CanHaveNotesTrait, PhoneModelTrait, AddressModelTrait;
     protected $table = 'organizations';
 
     protected $fillable = [
@@ -69,5 +75,28 @@ class Organization extends Model
             ;
         }
         return $query;
+    }
+
+    public static function add(\mmerlijn\msgRepo\Organization|Organization $organization, VektisType $type = VektisType::ONDERNEMING): ?Organization
+    {
+        if (!$organization->agbcode) {
+            return null;
+        }
+        if($r = self::withTrashed()->find($organization->agbcode)){
+            return $r;
+        }
+        $r_new = new self;
+        $r_new->agbcode = $organization->agbcode;
+        if ($organization instanceof \mmerlijn\msgRepo\Organization) {
+            $r_new->name = $organization->name;
+            $r_new->address = $organization->address;
+            $r_new->phone = $organization->phone;
+        }
+        $r_new->save();
+
+        if(config('laravel_salt.vektis',false)){
+            GetCaregiverJob::dispatch($organization->agbcode,VektisType::ONDERNEMING);
+        }
+        return $r_new;
     }
 }

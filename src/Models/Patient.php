@@ -361,9 +361,6 @@ class Patient extends Model
         return null;
     }
 
-    protected static function newFactory()
-    {
-        return PatientFactory::new();
-    }
+
 
 }

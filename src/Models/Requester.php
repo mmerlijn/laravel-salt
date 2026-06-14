@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use mmerlijn\LaravelSalt\Http\Resources\Requester\RequesterResource;
 use mmerlijn\LaravelSalt\Jobs\GetCaregiverJob;
 use mmerlijn\LaravelSalt\Models\Traits\CanHaveNotesTrait;
+use mmerlijn\LaravelSalt\Models\Traits\NameModelTrait;
 use mmerlijn\LaravelSalt\Observers\RequesterObserver;
 use mmerlijn\msgRepo\Contact;
 use mmerlijn\msgRepo\Enums\VektisType;
@@ -27,7 +28,7 @@ use mmerlijn\msgRepo\Name;
 #[ObservedBy(RequesterObserver::class), UseResource(RequesterResource::class)]
 class Requester extends Model
 {
-    use SoftDeletes, CanHaveNotesTrait, HasNameTrait;
+    use SoftDeletes, CanHaveNotesTrait, HasNameTrait, NameModelTrait;
 
     protected $primaryKey = 'agbcode';
     public $incrementing = false;
