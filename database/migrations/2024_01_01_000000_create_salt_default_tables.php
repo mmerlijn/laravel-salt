@@ -103,6 +103,9 @@ return new class extends Migration
             $table->json('owners')->nullable()->comment('array of agbcodes');
             $table->timestamp('vektis_at')->nullable();
             $table->timestamp('started_at')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->index(['deleted_at', 'agbcode', 'own_lastname'], 'v_reqz_ind');
         });
 
 
