@@ -16,6 +16,7 @@ use mmerlijn\LaravelSalt\Models\Traits\NameModelTrait;
 use mmerlijn\LaravelSalt\Observers\RequesterObserver;
 use mmerlijn\msgRepo\Address;
 use mmerlijn\msgRepo\Contact;
+use mmerlijn\msgRepo\Enums\PatientSexEnum;
 use mmerlijn\msgRepo\Enums\VektisType;
 use mmerlijn\msgRepo\Enums\YesNoEnum;
 use mmerlijn\msgRepo\HasNameTrait;
@@ -52,6 +53,7 @@ class Requester extends Model
         'vektis_at' => 'datetime',
         'started_at' => 'datetime',
         'type'=>VektisType::class,
+        'sex'=>PatientSexEnum::class,
     ];
 
     public static function getRequesterByAgbcode(string $agbcode):?Requester
