@@ -11,7 +11,8 @@ class RequesterResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'name' => $this->name,
+            'vektis_name' => $this->vektis_name,
+            'name' => $this->when(!!$this->own_lastname, $this->name->toArray()),
             'sex' => $this->sex ? $this->sex->value : '',
             'agbcode' => $this->agbcode,
             'phone' => $this->phone ? (string)$this->phone : '',
