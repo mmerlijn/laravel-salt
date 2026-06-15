@@ -2078,16 +2078,16 @@
         },
         {
             "name": "mmerlijn/msg-repo",
-            "version": "v3.9",
+            "version": "v3.9.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mmerlijn/msg-repo.git",
-                "reference": "bffaef86e1fc646be399acbe30341c2cba8a3945"
+                "reference": "cca6829824110ea047cf72dc6a6a11f6bc90c6da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mmerlijn/msg-repo/zipball/bffaef86e1fc646be399acbe30341c2cba8a3945",
-                "reference": "bffaef86e1fc646be399acbe30341c2cba8a3945",
+                "url": "https://api.github.com/repos/mmerlijn/msg-repo/zipball/cca6829824110ea047cf72dc6a6a11f6bc90c6da",
+                "reference": "cca6829824110ea047cf72dc6a6a11f6bc90c6da",
                 "shasum": ""
             },
             "require": {
@@ -2122,9 +2122,9 @@
             "description": "Dutch healthcare read/write edifact to/from repository",
             "support": {
                 "issues": "https://github.com/mmerlijn/msg-repo/issues",
-                "source": "https://github.com/mmerlijn/msg-repo/tree/v3.9"
+                "source": "https://github.com/mmerlijn/msg-repo/tree/v3.9.3"
             },
-            "time": "2026-06-13T20:30:21+00:00"
+            "time": "2026-06-15T11:42:54+00:00"
         },
         {
             "name": "monolog/monolog",
