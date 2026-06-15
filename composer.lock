@@ -1064,12 +1064,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "1baaf229cf8a8a4a0e7f2ed01dd4c8f97f299ac8"
+                "reference": "f63411b02ff02229beb3f3302e3bb2c68ff7300a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/1baaf229cf8a8a4a0e7f2ed01dd4c8f97f299ac8",
-                "reference": "1baaf229cf8a8a4a0e7f2ed01dd4c8f97f299ac8",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/f63411b02ff02229beb3f3302e3bb2c68ff7300a",
+                "reference": "f63411b02ff02229beb3f3302e3bb2c68ff7300a",
                 "shasum": ""
             },
             "require": {
@@ -1281,7 +1281,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-06-12T22:43:09+00:00"
+            "time": "2026-06-15T08:57:50+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -2231,16 +2231,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "3.11.4",
+            "version": "3.12.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CarbonPHP/carbon.git",
-                "reference": "e890471a3494740f7d9326d72ce6a8c559ffee60"
+                "reference": "6e7853a668c3107294aff38d42bf760ec02126b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/e890471a3494740f7d9326d72ce6a8c559ffee60",
-                "reference": "e890471a3494740f7d9326d72ce6a8c559ffee60",
+                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/6e7853a668c3107294aff38d42bf760ec02126b6",
+                "reference": "6e7853a668c3107294aff38d42bf760ec02126b6",
                 "shasum": ""
             },
             "require": {
@@ -2332,7 +2332,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-04-07T09:57:54+00:00"
+            "time": "2026-06-14T20:41:42+00:00"
         },
         {
             "name": "nette/schema",
