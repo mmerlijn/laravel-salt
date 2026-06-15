@@ -2,7 +2,7 @@
 
 namespace mmerlijn\LaravelSalt\Models;
 
-use Database\Factories\PatientFactory;
+use mmerlijn\LaravelSalt\Databsae\Factories\PatientFactory;
 use mmerlijn\LaravelSalt\Http\Resources\Patient\PatientResource;
 
 
