@@ -2,7 +2,9 @@
 
 namespace mmerlijn\LaravelSalt\Models\Traits;
 
-use App\Models\Note;
+
+
+use mmerlijn\LaravelSalt\Models\Note;
 
 trait CanHaveNotesTrait
 {
