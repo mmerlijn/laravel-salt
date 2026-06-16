@@ -114,11 +114,11 @@ class FindOrCreatePatient
                     }
                 }
             }
-            $v = Validator::make($patientArray, [
-                'postcode' => 'nullable|regex:/\b^[0-9]{4} ?[a-zA-Z]{2}$\b/'
-            ],
-                ['postcode.regex' => 'Invalid Dutch postcode format found: ' . $patientArray['postcode'] ?? '']);
-            $v->validate();
+            //$v = Validator::make($patientArray, [
+            //    'postcode' => 'nullable|regex:/\b^[0-9]{4} ?[a-zA-Z]{2}$\b/'
+            //],
+            //    ['postcode.regex' => 'Invalid Dutch postcode format found: ' . $patientArray['postcode'] ?? '']);
+            //$v->validate();
         }
 
         $v = Validator::make($patientArray, [
