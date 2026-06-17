@@ -140,6 +140,9 @@ class FindOrCreatePatient
             unset($patientArray['general_practitioner']);
         }
 
+        if(in_array($patientArray['bsn'],['000000000','999999999'])){
+            unset($patientArray['bsn']);
+        }
         if ($patientArray['bsn'] ?? null) {
 
             return Patient::updateOrCreate(['bsn' => $patientArray['bsn']], $patientArray);
@@ -150,7 +153,7 @@ class FindOrCreatePatient
                 'sex' => $patientArray['sex']->value,
                 'own_lastname' => $patientArray['own_lastname'],
                 'postcode' => $patientArray['postcode'] ?? null,
-                'bsn' => $patientArray['bsn'] ?? null
+                'bsn' => $patientArray['bsn'] ?? null,
             ],
                 $patientArray
             );
