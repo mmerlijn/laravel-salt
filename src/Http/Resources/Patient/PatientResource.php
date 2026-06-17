@@ -38,6 +38,8 @@ class PatientResource extends JsonResource
             'sex' => $this->sex->value,
             'lang' => $this->lang,
             'deceased' => (bool)$this->deceased,
+            'labtrain_id' => $this->labtrain_id,
+            'contact_id' => $this->contact_id,
         ];
     }
 }

@@ -76,6 +76,7 @@ use mmerlijn\msgRepo\Phone;
  * @property string $phone_note
  * @property string $email_ext
  * @property int $contact_id
+ * @property int $labtrain_id
  */
 #[ObservedBy(PatientObserver::class), UseResource(PatientResource::class)]
 class Patient extends Model

@@ -36,6 +36,8 @@ class PatientFullResource extends JsonResource
             'bsn' => auth()?->user()->can('patient_bsn') ? $this->bsn : 'geen toegang',
             'sex' => $this->sex->value,
             'deceased' => $this->deceased,
+            'labtrain_id' => $this->labtrain_id,
+            'contact_id' => $this->contact_id,
         ];
     }
 }

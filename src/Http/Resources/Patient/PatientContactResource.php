@@ -1,6 +1,6 @@
 <?php
 
-namespace mmerlijn\LaravelProces\Http\Resources\Patient;
+namespace mmerlijn\LaravelSalt\Http\Resources\Patient;
 use Illuminate\Http\Resources\Json\JsonResource;
 use mmerlijn\LaravelSalt\Models\Patient;
 
@@ -23,6 +23,8 @@ class PatientContactResource extends JsonResource
             'labels' => $this->labels,
             'sex' => $this->sex->value,
             'deceased' => $this->deceased,
+            'labtrain_id' => $this->labtrain_id,
+            'contact_id' => $this->contact_id,
         ];
     }
 }
