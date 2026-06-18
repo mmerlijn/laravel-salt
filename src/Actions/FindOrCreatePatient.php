@@ -140,7 +140,7 @@ class FindOrCreatePatient
             unset($patientArray['general_practitioner']);
         }
 
-        if(in_array($patientArray['bsn'],['000000000','999999999'])){
+        if(in_array($patientArray['bsn']??"",['000000000','999999999'])){
             unset($patientArray['bsn']);
         }
         if ($patientArray['bsn'] ?? null) {
