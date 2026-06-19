@@ -119,8 +119,14 @@ class Requester extends Model
     public function scopeFilter($query, array $filter)
     {
         if (isset($filter['q'])) {
-            $query->where('own_lastname', 'like', $filter['q'] . '%')
-            ;
+            $query->whereAny([
+                'vektis_name',
+                'own_lastname',
+            ], 'like', '%'.$filter['q'] . '%');
+
+        }
+        if(isset($filter['type'])){
+            $query->whereType( $filter['type']);
         }
         return $query;
     }
