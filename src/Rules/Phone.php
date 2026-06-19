@@ -18,6 +18,9 @@ class Phone implements ValidationRule
             return;
         }
         $value = str_replace([" ", "-", ".", "(0)"], "", $value);
+        if(!$value){
+            return;
+        }
         if (str_starts_with("00", $value)) {
             $value = str_replace("00", "+", $value);
         }
