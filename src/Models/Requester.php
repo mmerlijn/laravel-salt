@@ -5,9 +5,11 @@ namespace mmerlijn\LaravelSalt\Models;
 
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\UseResource;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use mmerlijn\LaravelSalt\Databsae\Factories\RequesterFactory;
 use mmerlijn\LaravelSalt\Http\Resources\Requester\RequesterResource;
 use mmerlijn\LaravelSalt\Jobs\GetCaregiverJob;
 use mmerlijn\LaravelSalt\Models\Traits\AddressModelTrait;
@@ -38,7 +40,7 @@ use mmerlijn\msgRepo\Phone;
 #[ObservedBy(RequesterObserver::class), UseResource(RequesterResource::class)]
 class Requester extends Model
 {
-    use SoftDeletes, CanHaveNotesTrait, HasNameTrait, NameModelTrait, AddressModelTrait;
+    use HasFactory, SoftDeletes, CanHaveNotesTrait, HasNameTrait, NameModelTrait, AddressModelTrait;
 
     protected $primaryKey = 'agbcode';
     public $incrementing = false;
@@ -129,5 +131,10 @@ class Requester extends Model
             $query->whereType( $filter['type']);
         }
         return $query;
+    }
+
+    protected static function newFactory(): RequesterFactory
+    {
+        return RequesterFactory::new();
     }
 }

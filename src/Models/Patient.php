@@ -3,6 +3,7 @@
 namespace mmerlijn\LaravelSalt\Models;
 
 use mmerlijn\LaravelSalt\Databsae\Factories\PatientFactory;
+use mmerlijn\LaravelSalt\Helpers\PayloadInterface;
 use mmerlijn\LaravelSalt\Http\Resources\Patient\PatientResource;
 
 

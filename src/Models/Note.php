@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
+use mmerlijn\LaravelSalt\Databsae\Factories\NoteFactory;
 use mmerlijn\LaravelSalt\Enums\NoteSubjectEnum;
 use mmerlijn\LaravelSalt\Enums\NoteTypeEnum;
 
@@ -55,6 +56,11 @@ class Note extends Model
     public function prunable(): Builder
     {
         return static::whereDate('delete_after', '<', now());
+    }
+
+    protected static function newFactory(): NoteFactory
+    {
+        return NoteFactory::new();
     }
 
 

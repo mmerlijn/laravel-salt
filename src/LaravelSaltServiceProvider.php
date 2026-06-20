@@ -40,9 +40,17 @@ class LaravelSaltServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->loadRoutesFrom(__DIR__ . '/../routes/laravel-salt.php');
+
         $this->publishes([
             __DIR__ . '/../config/laravel_salt.php' => config_path('laravel_salt.php'),
         ], 'config');
+
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-salt');
+
+        $this->publishes([
+            __DIR__ . '/../resources/views' => resource_path('views/vendor/laravel-salt'),
+        ], 'views');
 
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 

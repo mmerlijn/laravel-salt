@@ -24,7 +24,9 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "mmerlijn\\LaravelSalt\\Tests\\": "tests/"
+      "mmerlijn\\LaravelSalt\\Tests\\": "tests/",
+      "Workbench\\App\\": "workbench/app/",
+      "Workbench\\Database\\Factories\\": "workbench/database/factories/"
     }
   },
   "extra": {

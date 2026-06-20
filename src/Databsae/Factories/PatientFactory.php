@@ -21,7 +21,7 @@ class PatientFactory extends Factory
             'prefix' => null,
             'own_prefix' => $this->faker->optional(0.2)->randomElement(['van', 'van de', "op 't", 'de']),
             'dob' => \Carbon\Carbon::parse($this->faker->dateTimeThisYear())->subYears($this->faker->numberBetween(0, 102))->format('Y-m-d'),
-            'bsn' => $this->faker->optional(0.95)->idNumber(),
+            'bsn' => $this->faker->optional(0.95)->numerify('#########'),
             'postcode' => $this->faker->postcode(),
             'city' => $this->faker->city(),
             'street' => $this->faker->streetName(),

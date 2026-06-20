@@ -162,8 +162,101 @@ return new class extends Migration
             $table->timestamps();
         });
 
-    }
+        Schema::create('app_errors', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedTinyInteger('level')->default(1);
+            $table->string('from_type')->nullable();
+            $table->unsignedBigInteger('from_id')->nullable();
+            $table->string('at_type')->nullable();
+            $table->unsignedBigInteger('at_id')->nullable();
+            $table->string('class')->nullable();
+            //$table->string('app')->nullable();
+            $table->text('solution')->nullable();
+            $table->text('message')->nullable();
+            $table->mediumText('trace')->nullable();
+            $table->string('exception_class')->nullable();
+            $table->boolean('notify')->default(0);
+            $table->json('notified'); //emails to
+            $table->index(['deleted_at', 'level','class'], 'app_error_ind');
+            $table->timestamps();
+            $table->softDeletes();
+        });
 
+        Schema::create('flows', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedSmallInteger('type');
+            $table->string('payload_type', 50)->nullable();
+            $table->unsignedBigInteger('payload_id')->nullable();
+            $table->json('stack');
+            $table->unsignedSmallInteger('attempts')->default(0);
+            $table->timestamp('try_after')->default(now());
+            $table->unsignedBigInteger('app_error_id')->nullable();
+            $table->index(['try_after','app_error_id'], "msg_batch_ready_index");
+            $table->timestamps();
+        });
+        Schema::create('flow_exchanges', function (Blueprint $table)
+        {
+            $table->id();
+            $table->unsignedBigInteger('flow_id');
+            $table->unsignedSmallInteger('type')->default(0);
+            $table->mediumText('request');
+            $table->mediumText('response')->nullable();
+            $table->timestamp('request_at')->default(now());
+            $table->timestamp('response_at')->nullable();
+            $table->timestamps();
+            $table->foreign('flow_id')->references('id')
+                ->on('flows')->onDelete('cascade');
+        });
+        Schema::create('flow_requests', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('flow_id');
+            $table->unsignedSmallInteger('type')->default(0);
+            $table->mediumText('request');
+            $table->timestamp('request_at')->default(now());
+            $table->timestamps();
+            $table->foreign('flow_id')->references('id')
+                ->on('flows')->onDelete('cascade');
+        });
+        Schema::create('flow_responses', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('flow_id');
+            $table->unsignedSmallInteger('type')->default(0);
+            $table->mediumText('response')->nullable();
+            $table->timestamp('response_at')->nullable();
+            $table->timestamps();
+            $table->foreign('flow_id')->references('id')
+                ->on('flows')->onDelete('cascade');
+        });
+
+        Schema::create('flow_exchange_logs', function (Blueprint $table)
+        {
+            $table->id();
+            $table->unsignedSmallInteger('type')->default(0);
+            $table->mediumText('request');
+            $table->mediumText('response')->nullable();
+            $table->timestamp('request_at')->default(now());
+            $table->timestamp('response_at')->nullable();
+            $table->json('flow')->nullable();
+            $table->timestamps();
+        });
+        Schema::create('flow_request_logs', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedSmallInteger('type')->default(0);
+            $table->mediumText('request');
+            $table->timestamp('request_at')->default(now());
+            $table->json('flow')->nullable();
+            $table->timestamps();
+        });
+        Schema::create('flow_response_logs', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedSmallInteger('type')->default(0);
+            $table->mediumText('response')->nullable();
+            $table->timestamp('response_at')->nullable();
+            $table->json('flow')->nullable();
+            $table->timestamps();
+        });
+
+    }
 
     /**
      * Reverse the migrations.
