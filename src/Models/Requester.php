@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use mmerlijn\LaravelSalt\Http\Resources\Requester\RequesterResource;
 use mmerlijn\LaravelSalt\Models\Traits\AddressModelTrait;
 use mmerlijn\LaravelSalt\Models\Traits\CanHaveNotesTrait;
+use mmerlijn\LaravelSalt\Models\Traits\FlowModelTrait;
 use mmerlijn\LaravelSalt\Models\Traits\NameModelTrait;
 use mmerlijn\LaravelSalt\Observers\RequesterObserver;
 use mmerlijn\msgRepo\Address;
@@ -37,7 +38,7 @@ use Workbench\Database\Factories\RequesterFactory;
 #[ObservedBy(RequesterObserver::class), UseResource(RequesterResource::class)]
 class Requester extends Model
 {
-    use HasFactory, SoftDeletes, CanHaveNotesTrait, HasNameTrait, NameModelTrait, AddressModelTrait;
+    use HasFactory, SoftDeletes, CanHaveNotesTrait, HasNameTrait, NameModelTrait, AddressModelTrait, FlowModelTrait;
 
     protected $primaryKey = 'agbcode';
     public $incrementing = false;
@@ -51,11 +52,11 @@ class Requester extends Model
         'owners' => 'array',
         'vektis_at' => 'datetime',
         'started_at' => 'datetime',
-        'type'=>VektisType::class,
-        'sex'=>PatientSexEnum::class,
+        'type' => VektisType::class,
+        'sex' => PatientSexEnum::class,
     ];
 
-    public static function getRequesterByAgbcode(string $agbcode):?Requester
+    public static function getRequesterByAgbcode(string $agbcode): ?Requester
     {
         return Requester::withTrashed()->whereAgbcode(trim($agbcode))->first();
 
@@ -93,7 +94,7 @@ class Requester extends Model
 
     public function related(): BelongsToMany
     {
-        if($this->type == VektisType::ZORGVERLENER) {
+        if ($this->type == VektisType::ZORGVERLENER) {
             return $this->belongsToMany(
                 Requester::class,
                 'organization_has_requester',
@@ -102,7 +103,7 @@ class Requester extends Model
                 'agbcode',
                 'agbcode'
             )->withTimestamps();
-        }else{
+        } else {
             return $this->belongsToMany(
                 Requester::class,
                 'organization_has_requester',
@@ -121,11 +122,11 @@ class Requester extends Model
             $query->whereAny([
                 'vektis_name',
                 'own_lastname',
-            ], 'like', '%'.$filter['q'] . '%');
+            ], 'like', '%' . $filter['q'] . '%');
 
         }
-        if(isset($filter['type'])){
-            $query->whereType( $filter['type']);
+        if (isset($filter['type'])) {
+            $query->whereType($filter['type']);
         }
         return $query;
     }

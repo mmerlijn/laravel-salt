@@ -51,7 +51,6 @@ class FlowExchange extends Model
         ];
     }
 
-
     public function patient(): BelongsTo
     {
         return $this->belongsTo(Patient::class);

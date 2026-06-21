@@ -2,7 +2,6 @@
 
 namespace mmerlijn\LaravelSalt\Models;
 
-use mmerlijn\LaravelSalt\Http\Resources\Patient\PatientResource;
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\UseResource;
@@ -18,14 +17,16 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use mmerlijn\LaravelSalt\Actions\FindOrCreatePatient;
 use mmerlijn\LaravelSalt\Casts\PhoneCast;
+use mmerlijn\LaravelSalt\Http\Resources\Patient\PatientResource;
 use mmerlijn\LaravelSalt\Models\Traits\AccessLogsTrait;
+use mmerlijn\LaravelSalt\Models\Traits\AddressModelTrait;
 use mmerlijn\LaravelSalt\Models\Traits\CanBeLockedTrait;
 use mmerlijn\LaravelSalt\Models\Traits\CanHaveAppointmentTrait;
 use mmerlijn\LaravelSalt\Models\Traits\CanHaveNotesTrait;
+use mmerlijn\LaravelSalt\Models\Traits\FlowModelTrait;
+use mmerlijn\LaravelSalt\Models\Traits\NameModelTrait;
 use mmerlijn\LaravelSalt\Observers\PatientObserver;
 use mmerlijn\LaravelSalt\Rules\Bsn;
-use mmerlijn\LaravelSalt\Models\Traits\AddressModelTrait;
-use mmerlijn\LaravelSalt\Models\Traits\NameModelTrait;
 use mmerlijn\msgRepo\Address;
 use mmerlijn\msgRepo\Enums\LangEnum;
 use mmerlijn\msgRepo\Enums\PatientSexEnum;
@@ -80,7 +81,7 @@ use Workbench\Database\Factories\PatientFactory;
 class Patient extends Model
 {
     use Notifiable, HasFactory, SoftDeletes, NameModelTrait, AddressModelTrait,
-        AccessLogsTrait, CanHaveAppointmentTrait, CanHaveNotesTrait, CanBeLockedTrait;
+        AccessLogsTrait, CanHaveAppointmentTrait, CanHaveNotesTrait, CanBeLockedTrait, FlowModelTrait;
 
 
     protected $guarded = [];
@@ -126,7 +127,7 @@ class Patient extends Model
     {
         $class = config('laravel-salt.classes.followup');
 
-        if(!$class){
+        if (!$class) {
             throw new \RuntimeException(
                 "De 'laravel-salt.classes.followup' configuratie is niet ingesteld, maar de followup relatie wordt wel aangeroepen."
             );
@@ -138,7 +139,7 @@ class Patient extends Model
     public function appointments(): MorphMany
     {
         $class = config('laravel-salt.classes.appointment');
-        if (! $class) {
+        if (!$class) {
             throw new \RuntimeException(
                 "De 'laravel-salt.classes.appointment' configuratie is niet ingesteld, maar de appointments relatie wordt wel aangeroepen."
             );
@@ -149,7 +150,7 @@ class Patient extends Model
     public function tests(): HasMany
     {
         $class = config('laravel-salt.classes.test');
-        if (! $class) {
+        if (!$class) {
             throw new \RuntimeException(
                 "De 'laravel-salt.classes.test' configuratie is niet ingesteld, maar de tests relatie wordt wel aangeroepen."
             );
@@ -165,6 +166,7 @@ class Patient extends Model
             'agbcode' => '00000000',
         ]);
     }
+
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Requester::class, 'last_requester', 'agbcode')->withTrashed()->withDefault([
@@ -185,7 +187,7 @@ class Patient extends Model
     public function requests(): HasMany
     {
         $class = config('laravel-salt.classes.request');
-        if(!$class){
+        if (!$class) {
             throw new \RuntimeException("De 'laravel-salt.classes.request' configuratie is niet ingesteld, maar de request relatie wordt wel aangeroepen.");
         }
         return $this->hasMany($class::class);
@@ -195,9 +197,9 @@ class Patient extends Model
     public static function getPatient(\mmerlijn\msgRepo\Patient $patient, bool $create = false): ?Patient
     {
         try {
-            if($patient->getLabtrainId()){
+            if ($patient->getLabtrainId()) {
                 $p = self::whereLabtrainId($patient->getLabtrainId())->first();
-                if($p){
+                if ($p) {
                     return $p;
                 }
             }
