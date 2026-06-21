@@ -14,7 +14,7 @@ use mmerlijn\LaravelSalt\Jobs\PruneLocks;
 use mmerlijn\LaravelSalt\Models\AppError;
 use mmerlijn\LaravelSalt\Models\Flow;
 use mmerlijn\LaravelSalt\Models\FlowExchange;
-use mmerlijn\LaravelSalt\Models\FlowRequest;
+use mmerlijn\LaravelSalt\Models\FlowLog;
 use mmerlijn\LaravelSalt\Models\FlowResponse;
 use mmerlijn\LaravelSalt\Models\Requester;
 
@@ -51,10 +51,8 @@ class LaravelSaltServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Relation::morphMap([
-            'flow-request' => FlowRequest::class,
-            'flow-response' => FlowResponse::class,
+            'flow-log' => FlowLog::class,
             'flow' => Flow::class,
-            'flow-exchange' => FlowExchange::class,
             'app-error' => AppError::class,
             'requester' => Requester::class,
         ]);
@@ -82,8 +80,6 @@ class LaravelSaltServiceProvider extends ServiceProvider
             $this->app->booted(function () {
                 $schedule = $this->app->make(Schedule::class);
 
-                //Luisteren naar binnenkomende berichten
-                //$schedule->job(new ListenForExchangesJob)->everyMinute();
                 // Uitvoeren van FlowTasks
                 $schedule->job(new FlowRunnerJob)->everyMinute();
                 // Opschonen van de locks

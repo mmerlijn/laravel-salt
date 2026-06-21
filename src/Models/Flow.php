@@ -106,6 +106,7 @@ class Flow extends Model
         if ($payload) {
             return $payload->flows()->create([
                 'type' => $flow,
+                'active' => 1,
                 'stack' => $stack,
                 'try_after' => now()->addMinutes($wait)->subSecond(),
                 'app_error_id' => $ae->id ?? null,
@@ -113,6 +114,7 @@ class Flow extends Model
         }
         return self::create([
             'type' => $flow,
+            'active' => 1,
             'stack' => $stack,
             'app_error_id' => $ae->id ?? null,
             'try_after' => now()->addMinutes($wait)->subSecond(),
@@ -124,10 +126,11 @@ class Flow extends Model
         foreach (self::whereNull('app_error_id')
                      ->whereActive(false)
                      ->cursor() as $flow) {
-            $flow->stack = self::getStackFromConfig($flow?->value ?? $flow);
+            $flow->stack = self::getStackFromConfig($flow->type);
             $flow->active = true;
             $flow->save();
         }
+
         foreach (self::whereNull('app_error_id')
                      ->where('try_after', '<', now())
                      ->whereActive(true)

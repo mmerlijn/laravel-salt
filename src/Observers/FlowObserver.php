@@ -6,10 +6,16 @@ namespace mmerlijn\LaravelSalt\Observers;
 use mmerlijn\LaravelSalt\Models\AppError;
 use mmerlijn\LaravelSalt\Models\Flow;
 use mmerlijn\LaravelSalt\Models\FlowLog;
-use mmerlijn\LaravelSalt\Models\FlowResponse;
 
 class FlowObserver
 {
+
+    public function creating(Flow $flow): void
+    {
+        if (!$flow->try_after) {
+            $flow->try_after = now()->subMinute();
+        }
+    }
 
 
     public function deleting(Flow $flow): void
@@ -25,7 +31,6 @@ class FlowObserver
             'request_at' => $flow->request_at,
             'payload_id' => $flow->payload_id,
             'payload_type' => $flow->payload_type,
-            'attempts' => $flow->attempts,
         ]);
         if (!$flow->payload_id) {
             return;

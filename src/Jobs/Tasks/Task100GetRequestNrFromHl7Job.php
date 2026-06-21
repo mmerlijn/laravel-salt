@@ -23,6 +23,7 @@ class Task100GetRequestNrFromHl7Job implements ShouldQueue
         try {
             //payload kan een Exchange / Request zijn
             $this->flow->request_nr = new GetRequestNrFromHl7()($this->flow->request);
+
             $this->flow->save();
             $v = Validator::make(['request_nr' => $this->flow->request_nr], [
                 'request_nr' => [new RequestNr],
@@ -34,7 +35,7 @@ class Task100GetRequestNrFromHl7Job implements ShouldQueue
                 level: ErrorLevelEnum::SYSTEEMBEHEER,
                 fromObject: $this->flow,
                 exception: $e,
-                solution: "Zorg voor een valide aanvraagnr in het HL7 bericht",
+                solution: "Zorg voor een valide aanvraagnr in het HL7 bericht ipv: " . $this->flow->request_nr,
                 notify: false,
                 erroredClass: self::class,
             )->store());

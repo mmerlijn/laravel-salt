@@ -153,7 +153,7 @@ vendor/bin/testbench route:list
 Testing all tests:
 
 ```bash
-./vendor/bin/test
+./vendor/bin/pest
 
 # or 
 ./vendor/bin/pest --parallel
