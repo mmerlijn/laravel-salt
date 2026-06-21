@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Attributes\UseResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
@@ -30,8 +29,14 @@ use Workbench\Database\Factories\FlowFactory;
  * @property int $type
  * @property Model|null $payload
  * @property array $data
- * @property int $exchange_id
- * @property FlowExchange $exchange
+ * @property string $request
+ * @property Carbon $request_at
+ * @property string $response
+ * @property Carbon $response_at
+ * @property bool $active
+ * @property int $labtrain_id
+ * @property int $patient_id
+ * @property string $request_nr
  */
 #[UseResource(FlowResource::class), ObservedBy(FlowObserver::class)]
 class Flow extends Model
@@ -48,7 +53,15 @@ class Flow extends Model
         'try_after',
         'store',
         'data',
-        'exchange_id'
+        'request',
+        'response',
+        'request_at',
+        'response_at',
+        'type',
+        'patient_id',
+        'request_nr',
+        'labtrain_id',
+        'active'
     ];
     protected $table = 'flows';
 
@@ -58,12 +71,10 @@ class Flow extends Model
             'stack' => 'array',
             'try_after' => 'datetime',
             'data' => 'array',
+            'request_at' => 'datetime',
+            'response_at' => 'datetime',
+            'active' => 'boolean',
         ];
-    }
-
-    public function exchange(): BelongsTo
-    {
-        return $this->belongsTo(FlowExchange::class, 'exchange_id');
     }
 
     public function appErrors(): MorphMany
@@ -76,10 +87,6 @@ class Flow extends Model
         return $this->belongsTo(AppError::class, 'app_error_id');
     }
 
-    public function exchanges(): HasMany
-    {
-        return $this->hasMany(FlowExchange::class, 'flow_id');
-    }
 
     public function payload(): MorphTo
     {
@@ -111,7 +118,15 @@ class Flow extends Model
     public static function runAll(): void
     {
         foreach (self::whereNull('app_error_id')
+                     ->whereActive(false)
+                     ->cursor() as $flow) {
+            $flow->stack = self::getStackFromConfig($flow?->value ?? $flow);
+            $flow->active = true;
+            $flow->save();
+        }
+        foreach (self::whereNull('app_error_id')
                      ->where('try_after', '<', now())
+                     ->whereActive(true)
                      ->cursor() as $flow) {
             $flow->run();
         }

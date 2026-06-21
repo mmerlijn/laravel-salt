@@ -10,7 +10,6 @@ use mmerlijn\LaravelSalt\Helpers\TimeArray;
 use mmerlijn\LaravelSalt\Helpers\Toast;
 use mmerlijn\LaravelSalt\Helpers\ToastInterface;
 use mmerlijn\LaravelSalt\Jobs\FlowRunnerJob;
-use mmerlijn\LaravelSalt\Jobs\ListenForExchangesJob;
 use mmerlijn\LaravelSalt\Jobs\PruneLocks;
 use mmerlijn\LaravelSalt\Models\AppError;
 use mmerlijn\LaravelSalt\Models\Flow;
@@ -84,7 +83,7 @@ class LaravelSaltServiceProvider extends ServiceProvider
                 $schedule = $this->app->make(Schedule::class);
 
                 //Luisteren naar binnenkomende berichten
-                $schedule->job(new ListenForExchangesJob)->everyMinute();
+                //$schedule->job(new ListenForExchangesJob)->everyMinute();
                 // Uitvoeren van FlowTasks
                 $schedule->job(new FlowRunnerJob)->everyMinute();
                 // Opschonen van de locks

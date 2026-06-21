@@ -17,11 +17,11 @@ use Illuminate\Support\Carbon;
  * @property string $request_nr
  * @property array $flow
  */
-class FlowExchangeLog extends Model
+class FlowLog extends Model
 {
     use MassPrunable;
 
-    protected $table = 'flow_exchange_logs';
+    protected $table = 'flow_logs';
 
     protected $fillable = [
         'flow',
@@ -32,7 +32,6 @@ class FlowExchangeLog extends Model
         'type',
         'patient_id',
         'request_nr',
-        'port',
         'labtrain_id',
         'payload_id',
         'payload_type',
