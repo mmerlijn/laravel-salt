@@ -132,6 +132,15 @@ class Flow extends Model
         }
     }
 
+    public function clearResponseAndRequest(): void
+    {
+        $this->response_at = null;
+        $this->request_at = null;
+        $this->response = null;
+        $this->request = null;
+        $this->save();
+    }
+
     public function run(): void
     {
         if (empty($this->stack)) {

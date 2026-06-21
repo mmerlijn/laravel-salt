@@ -3,54 +3,35 @@
 namespace mmerlijn\LaravelSalt\Jobs\Tasks;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
 use mmerlijn\LaravelSalt\Actions\Tasks\SendResponses\ResponseToHttp;
 use mmerlijn\LaravelSalt\Actions\Tasks\SendResponses\ResponseToMirth;
 use mmerlijn\LaravelSalt\Actions\Tasks\SendResponses\ResponseToMirthHttp;
 use mmerlijn\LaravelSalt\Enums\ErrorLevelEnum;
 use mmerlijn\LaravelSalt\Enums\SendTypeEnum;
 use mmerlijn\LaravelSalt\Helpers\Error;
-use mmerlijn\LaravelSalt\Models\Flow;
 use mmerlijn\LaravelSalt\Models\FlowExchange;
 
-class GetLabtrainPatientNrFromJsonJob implements ShouldQueue
+class Task101GetLabtrainPatientNrFromJsonJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TaskJobTrait;
 
-    public int $tries = 1;
-
-    public int $maxExceptions = 0;
-
-    public int $uniqueFor = 60;
-
-    public function uniqueVia(): Repository
-    {
-        return Cache::driver('database');
-    }
-
-    public function __construct(public Flow $flow)
-    {
-    }
-
-    public function uniqueId(): string
-    {
-        return 'flow-102-' . $this->flow->id;
-    }
 
     public function handle(): void
     {
-        if (!$this->flow->payload->patient_id) {
+        if (!$this->flow->patient_id) {
+            $this->flow->prepend(110); //ping
             $this->flow->prepend(255); //versturen van aanvraag voor patientnr
         }
-        if ($this->flow->payload->patient->labtrain_id) { //patient heeft al nummer
+        if ($this->flow->patient?->labtrain_id) { //patient heeft al nummer
+            $this->flow->labtrain_id = $this->flow->patient->labtrain_id;
+            $this->flow->save();
             $this->flow->done(self::class);
         }
-        if (!$this->flow->payload->request_nr) {
+        if (!$this->flow->request_nr) {
             $this->flow->prepend(100);
         }
         $f = FlowExchange::create([

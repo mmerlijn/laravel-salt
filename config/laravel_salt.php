@@ -5,8 +5,8 @@ return [
     'tasks' => [
         //example
         100 => \mmerlijn\LaravelSalt\Jobs\Tasks\GetRequestNrFromHl7Job::class,
-        101 => \mmerlijn\LaravelSalt\Jobs\Tasks\GetRequestNrFromHelplineJsonJob::class,
-        102 => \mmerlijn\LaravelSalt\Jobs\Tasks\GetPatientIdFromHl7Job::class,
+        101 => \mmerlijn\LaravelSalt\Jobs\Tasks\Task100GetRequestNrFromHelplineJsonJob::class,
+        102 => \mmerlijn\LaravelSalt\Jobs\Tasks\Task102GetPatientIdFromHl7Job::class,
         110 => \mmerlijn\LaravelSalt\Jobs\Tasks\Task110PingForResponseJob::class,
         // 103 => GetLabtrainPatientNrFromJsonJob::class,
         8000 => \mmerlijn\LaravelSalt\Jobs\Tasks\Send8000responsesJob::class,
