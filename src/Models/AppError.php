@@ -11,10 +11,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use mmerlijn\LaravelSalt\Databsae\Factories\AppErrorFactory;
 use mmerlijn\LaravelSalt\Enums\ErrorLevelEnum;
 use mmerlijn\LaravelSalt\Http\Resources\AppErrorResource;
 use mmerlijn\LaravelSalt\Observers\AppErrorObserver;
+use Workbench\Database\Factories\AppErrorFactory;
 
 /**
  * @property int|ErrorLevelEnum $level
@@ -39,11 +39,9 @@ class AppError extends Model
 
     protected $fillable = [
         'app_error_id',
-        'from_id',
-        'from_type',
+        'from',
+        'at',
         'level',
-        'at_type',
-        'at_id',
         'solution',
         'message',
         'trace',
@@ -66,13 +64,13 @@ class AppError extends Model
     //Object where the problem is triggered from (eg. a model)
     public function from(): MorphTo
     {
-        return $this->morphTo('from', 'from_type', 'from_id');
+        return $this->morphTo();
     }
 
     //Object where the problem can be solved
     public function at(): MorphTo
     {
-        return $this->morphTo('at', 'at_type', 'at_id');
+        return $this->morphTo();
     }
 
     public function scopeLevel(Builder $query, int|ErrorLevelEnum $level): Builder

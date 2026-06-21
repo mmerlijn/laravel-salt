@@ -1,6 +1,6 @@
 <?php
 
-namespace Workbench\App\Jobs;
+namespace mmerlijn\LaravelSalt\Jobs\Tasks;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Cache\Repository;
@@ -9,11 +9,14 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
+use mmerlijn\LaravelSalt\Actions\Tasks\GetRequestNrFromHl7;
 use mmerlijn\LaravelSalt\Enums\ErrorLevelEnum;
 use mmerlijn\LaravelSalt\Helpers\Error;
 use mmerlijn\LaravelSalt\Models\Flow;
+use mmerlijn\LaravelSalt\Rules\RequestNr;
 
-class FlowExampleTask2Job implements ShouldQueue
+class GetRequestNrFromHl7Job implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -27,26 +30,34 @@ class FlowExampleTask2Job implements ShouldQueue
     {
         return Cache::driver('database');
     }
+
     public function __construct(public Flow $flow)
     {
     }
+
     public function uniqueId(): string
     {
-        return 'flow-2-'.$this->flow->id;
+        return 'flow-100-' . $this->flow->id;
     }
+
     public function handle(): void
     {
         try {
-            $patient = $this->flow->from;
-            $patient->not_existing_field_id = 12345;
-            $patient->save();
-        } catch (\Exception|\Error $e) {
+            //payload kan een Exchange / Request zijn
+            $this->flow->payload->request_nr = new GetRequestNrFromHl7()($this->flow->payload->request);
+            $this->flow->payload->save();
+            $v = Validator::make(['request_nr' => $this->flow->payload->request_nr], [
+                'request_nr' => [new RequestNr],
+            ]);
+            $v->validate();
+            $this->flow->done(self::class);
+        } catch (\Exception $e) {
             $this->flow->fail(new Error(
-                level: ErrorLevelEnum::MENNO,
-                fromObject: $patient,
+                level: ErrorLevelEnum::SYSTEEMBEHEER,
+                fromObject: $this->flow->payload,
                 exception: $e,
-                solution: "Zorg dat dit gaat werken :)",
-                notify: true,
+                solution: "Zorg voor een valide aanvraagnr in het HL7 bericht",
+                notify: false,
                 erroredClass: self::class,
             )->store());
         }

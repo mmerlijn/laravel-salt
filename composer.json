@@ -15,7 +15,8 @@
     "illuminate/support": "^13.0",
     "ext-dom": "*",
     "ext-curl": "*",
-    "mmerlijn/laravel-postcode": "^3.0"
+    "mmerlijn/laravel-postcode": "^3.0",
+    "mmerlijn/msg-hl7": "^3.9"
   },
   "autoload": {
     "psr-4": {

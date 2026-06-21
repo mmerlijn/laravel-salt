@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
-use mmerlijn\LaravelSalt\Databsae\Factories\NoteFactory;
 use mmerlijn\LaravelSalt\Enums\NoteSubjectEnum;
 use mmerlijn\LaravelSalt\Enums\NoteTypeEnum;
+use Workbench\Database\Factories\NoteFactory;
 
 /**
  * @property int $id

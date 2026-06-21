@@ -12,8 +12,8 @@ it('can create records with package factories', function () {
     $appError = AppError::factory()->create();
 
     $flow = Flow::factory()
-        ->forPayload(Patient::class, $patient->id)
-        ->withAppError($appError)
+        ->payload(Patient::class, $patient->id)
+        ->appError($appError)
         ->create();
 
     $note = Note::factory()

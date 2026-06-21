@@ -2,30 +2,42 @@
 
 namespace mmerlijn\LaravelSalt\Models;
 
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
+use mmerlijn\LaravelSalt\Observers\FlowExchangeObserver;
+use Workbench\Database\Factories\FlowExchangeFactory;
 
 /**
  * @property string $request
  * @property string $response
  * @property Carbon $request_at
  * @property Carbon $response_at
- * @property int $flow_id
- * @property Flow $flow
  * @property mixed $type
+ * @property int $patient_id
+ * @property string $request_nr
+ * @property int $port
+ * @property Patient $patient
  */
+#[ObservedBy(FlowExchangeObserver::class)]
 class FlowExchange extends Model
 {
+    use HasFactory;
+
     protected $table = 'flow_exchanges';
 
-    protected $fillable=[
-        'flow_id',
+    protected $fillable = [
         'request',
         'response',
         'request_at',
         'response_at',
         'type',
+        'patient_id',
+        'request_nr',
+        'port'
     ];
 
     protected function casts(): array
@@ -35,8 +47,19 @@ class FlowExchange extends Model
             'response_at' => 'datetime',
         ];
     }
-    public function flow(): BelongsTo
+
+    public function flows(): MorphMany
     {
-        return $this->belongsTo(Flow::class);
+        return $this->morphMany(Flow::class, 'payload');
+    }
+
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class);
+    }
+
+    protected static function newFactory(): FlowExchangeFactory
+    {
+        return FlowExchangeFactory::new();
     }
 }

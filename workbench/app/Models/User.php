@@ -1,20 +1,18 @@
 <?php
-
 namespace Workbench\App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Workbench\Database\Factories\UserFactory; // Als je straks een factory wilt gebruiken
-
+use Illuminate\Notifications\Notifiable;
+use Workbench\Database\Factories\UserFactory;
 class User extends Authenticatable
+
 {
-    use HasFactory;
+use HasFactory, Notifiable;
 
-    protected $guarded = [];
-
-
-    protected static function newFactory(): UserFactory
-    {
-        return UserFactory::new();
-    }
+protected $guarded = [];
+protected static function newFactory(): UserFactory
+{
+    return UserFactory::new();
+}
 }

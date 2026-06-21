@@ -1,6 +1,6 @@
 <?php
 
-namespace mmerlijn\LaravelSalt\Databsae\Factories;
+namespace Workbench\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use mmerlijn\LaravelSalt\Models\Patient;

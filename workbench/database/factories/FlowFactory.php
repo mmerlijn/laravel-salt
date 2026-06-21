@@ -1,6 +1,6 @@
 <?php
 
-namespace mmerlijn\LaravelSalt\Databsae\Factories;
+namespace Workbench\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use mmerlijn\LaravelSalt\Models\AppError;
@@ -15,8 +15,6 @@ class FlowFactory extends Factory
     {
         return [
             'type' => $this->faker->numberBetween(1, 10),
-            'payload_type' => Patient::class,
-            'payload_id' => 1,
             'stack' => [$this->faker->numberBetween(1, 10)],
             'attempts' => 0,
             'try_after' => now()->subMinute(),
@@ -24,14 +22,14 @@ class FlowFactory extends Factory
         ];
     }
 
-    public function withAppError(?AppError $appError = null): self
+    public function appError(?AppError $appError = null): self
     {
         return $this->state(fn () => [
             'app_error_id' => $appError?->id ?? AppError::factory(),
         ]);
     }
 
-    public function forPayload(string $payloadType, int $payloadId): self
+    public function payload(string $payloadType, int $payloadId): self
     {
         return $this->state(fn () => [
             'payload_type' => $payloadType,

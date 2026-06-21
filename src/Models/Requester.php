@@ -9,21 +9,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use mmerlijn\LaravelSalt\Databsae\Factories\RequesterFactory;
 use mmerlijn\LaravelSalt\Http\Resources\Requester\RequesterResource;
-use mmerlijn\LaravelSalt\Jobs\GetCaregiverJob;
 use mmerlijn\LaravelSalt\Models\Traits\AddressModelTrait;
 use mmerlijn\LaravelSalt\Models\Traits\CanHaveNotesTrait;
 use mmerlijn\LaravelSalt\Models\Traits\NameModelTrait;
 use mmerlijn\LaravelSalt\Observers\RequesterObserver;
 use mmerlijn\msgRepo\Address;
-use mmerlijn\msgRepo\Contact;
 use mmerlijn\msgRepo\Enums\PatientSexEnum;
 use mmerlijn\msgRepo\Enums\VektisType;
 use mmerlijn\msgRepo\Enums\YesNoEnum;
 use mmerlijn\msgRepo\HasNameTrait;
-use mmerlijn\msgRepo\Name;
 use mmerlijn\msgRepo\Phone;
+use Workbench\Database\Factories\RequesterFactory;
 
 
 /**

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c106c02f065c791527d08b39a512758f",
+    "content-hash": "73a7b9deacd30345910990c17541367e",
     "packages": [
         {
             "name": "brick/math",
@@ -2075,6 +2075,58 @@
                 "source": "https://github.com/mmerlijn/laravel-postcode/tree/v3.0.3"
             },
             "time": "2025-11-21T06:42:10+00:00"
+        },
+        {
+            "name": "mmerlijn/msg-hl7",
+            "version": "v3.9.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mmerlijn/msg-hl7.git",
+                "reference": "ce37e33c4c10f3d9b2043cb2dfc5ff6593b11da5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mmerlijn/msg-hl7/zipball/ce37e33c4c10f3d9b2043cb2dfc5ff6593b11da5",
+                "reference": "ce37e33c4c10f3d9b2043cb2dfc5ff6593b11da5",
+                "shasum": ""
+            },
+            "require": {
+                "mmerlijn/msg-repo": "^3.9",
+                "nesbot/carbon": "~3.8",
+                "php": "^8.5"
+            },
+            "require-dev": {
+                "fakerphp/faker": "2.0.x-dev",
+                "larapack/dd": "^1.1",
+                "pestphp/pest": "4.x-dev"
+            },
+            "type": "project",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "mmerlijn\\msgHl7\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Menno",
+                    "email": "menno@mmerlijn.nl"
+                }
+            ],
+            "description": "Dutch healthcare read/write hl7 to/from repository",
+            "support": {
+                "issues": "https://github.com/mmerlijn/msg-hl7/issues",
+                "source": "https://github.com/mmerlijn/msg-hl7/tree/v3.9.10"
+            },
+            "time": "2026-06-19T15:04:13+00:00"
         },
         {
             "name": "mmerlijn/msg-repo",

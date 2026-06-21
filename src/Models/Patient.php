@@ -2,11 +2,7 @@
 
 namespace mmerlijn\LaravelSalt\Models;
 
-use mmerlijn\LaravelSalt\Databsae\Factories\PatientFactory;
-use mmerlijn\LaravelSalt\Helpers\PayloadInterface;
 use mmerlijn\LaravelSalt\Http\Resources\Patient\PatientResource;
-
-
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\UseResource;
@@ -38,6 +34,7 @@ use mmerlijn\msgRepo\Insurance;
 use mmerlijn\msgRepo\Name;
 use mmerlijn\msgRepo\Patient as PatientRepo;
 use mmerlijn\msgRepo\Phone;
+use Workbench\Database\Factories\PatientFactory;
 
 /**
  * @property int $id

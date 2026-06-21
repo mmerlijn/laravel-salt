@@ -3,19 +3,19 @@
 namespace mmerlijn\LaravelSalt\Models;
 
 use BackedEnum;
-use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\UseResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
-use mmerlijn\LaravelSalt\Databsae\Factories\FlowFactory;
 use mmerlijn\LaravelSalt\Enums\ErrorLevelEnum;
 use mmerlijn\LaravelSalt\Helpers\Error;
 use mmerlijn\LaravelSalt\Http\Resources\FlowResource;
 use mmerlijn\LaravelSalt\Observers\FlowObserver;
+use Workbench\Database\Factories\FlowFactory;
 
 
 /**
@@ -28,6 +28,7 @@ use mmerlijn\LaravelSalt\Observers\FlowObserver;
  * @property string $payload_type
  * @property int $type
  * @property Model|null $payload
+ * @property array $data
  */
 #[UseResource(FlowResource::class), ObservedBy(FlowObserver::class)]
 class Flow extends Model
@@ -41,7 +42,9 @@ class Flow extends Model
         'payload_id',
         'payload_type',
         'attempts',
-        'try_after'
+        'try_after',
+        'store',
+        'data'
     ];
     protected $table = 'flows';
 
@@ -50,7 +53,13 @@ class Flow extends Model
         return [
             'stack' => 'array',
             'try_after' => 'datetime',
+            'data' => 'array',
         ];
+    }
+
+    public function appErrors(): MorphMany
+    {
+        return $this->morphMany(AppError::class, 'from');
     }
 
     public function error(): BelongsTo
@@ -60,38 +69,40 @@ class Flow extends Model
 
     public function payload(): MorphTo
     {
-        return $this->morphTo('payload', 'payload_type', 'payload_id');
+        return $this->morphTo();
     }
 
     public static function add(int|BackedEnum $flow, ?Model $payload, $wait = 0): self
     {
-
-        $stack = config('laravel_salt.flows' . ($flow?->value ?? $flow), false);
-        if (!$flow) {
+        $stack = self::getStackFromConfig($flow?->value ?? $flow);
+        if (!$stack) {
             $ae = new Error(level: ErrorLevelEnum::MENNO, message: "Flow $flow has no configuration in laravel-salt.config", notify: true)->store();
         }
         if ($payload) {
-            $payloadClass = $payload::class;
-            $payloadId = $payload->id;
+            return $payload->flows()->create([
+                'type' => $flow,
+                'stack' => $stack,
+                'try_after' => now()->addMinutes($wait)->subSecond(),
+                'app_error_id' => $ae->id ?? null,
+            ]);
         }
-        $f = self::create([
+        return self::create([
             'type' => $flow,
             'stack' => $stack,
             'app_error_id' => $ae->id ?? null,
-            'payload_id' => $payloadId ?? null,
-            'payload_type' => $payloadClass ?? null,
-            'try_after' => now()->addMinutes($wait),
+            'try_after' => now()->addMinutes($wait)->subSecond(),
         ]);
-        return $f;
     }
-    public static function runAll():void
+
+    public static function runAll(): void
     {
         foreach (self::whereNull('app_error_id')
-                     ->where('try_after','<', now())
+                     ->where('try_after', '<', now())
                      ->cursor() as $flow) {
             $flow->run();
         }
     }
+
     public function run(): void
     {
         if (empty($this->stack)) {
@@ -104,21 +115,27 @@ class Flow extends Model
         if ($this->try_after->isAfter(now())) {
             return;
         }
+
         $todo = $this->stack[0];
         if (!is_array($todo)) {
             $todo = [$todo];
         }
         foreach ($todo as $task) {
-            $t = config('laravel-salt.flows.' . $task . '.class', false);
-
+            $t = config('laravel_salt.tasks.' . $task, false);
             if ($t) {
                 if (str_contains($t, 'Job')) {
                     $t::dispatch($this);
+
                 } else {
                     new $t()($this);
                 }
             } else {
-                new Error(level: ErrorLevelEnum::MENNO, fromObject: $this, message: "Flow task $task has no class configured in laravel-salt.config")->store();
+                $this->app_error_id = new Error(
+                    level: ErrorLevelEnum::MENNO,
+                    fromObject: $this,
+                    message: "Flow task $task has no class configured in laravel-salt.config")
+                    ->store()->id;
+                $this->save();
             }
         }
     }
@@ -140,55 +157,56 @@ class Flow extends Model
         $this->save();
     }
 
-    public function done(int $task, int $wait): void
+    public function done(int|string $task, int $wait = 0): void
     {
+        if (is_string($task)) {
+            $task = array_find_key(config('laravel_salt.tasks', []), fn($item) => $item == $task);
+        }
         //remove task from stack
         $this->stack = $this->filter_integer_recursive($this->stack, $task);
         $this->next(wait: $wait);
     }
 
-    public function prepend(int|array|BackedEnum $task, int $wait=0): void
+    public function prepend(int|array|BackedEnum $task, int $wait = 0): void
     {
         $stack = $this->stack;
         array_unshift($stack, $task->value ?? $task);
         $this->stack = $stack;
-        $this->wait(wait: $wait,reset:true);
+        $this->wait(wait: $wait, reset: true);
         $this->save();
         $this->run();
     }
 
     private function next(int $wait = 0): void
     {
-        $stack = $this->stack;
-        if (empty($stack)) {
+        if (empty($this->stack)) {
             $this->delete();
             return;
         }
-        $task = array_shift($stack);
-        $this->stack = $stack;
-        $this->wait(wait: $wait, reset:true);
+        $this->wait(wait: $wait, reset: true);
         $this->save();
         $this->run();
     }
 
-    private function wait(int $wait = 0, bool $reset=false): void
+    private function wait(int $wait = 0, bool $reset = false): void
     {
-        if($reset){
+        if ($reset) {
             $this->attempts = 0;
         }
-        if($this->attempts > 0) {
+        if ($this->attempts > 0) {
             $this->nextAttemptAt($wait);
             return;
         }
         $this->try_after = Carbon::now()->addMinutes($wait);
     }
+
     private function nextAttemptAt($wait = 0): void
     {
         if ($this->attempts <= 10) {
             $this->try_after = now()->addMinutes($this->attempts + $wait);
         }
         // exponentieel backoff na 10 tries, elke 1.5x langer wachten dan de vorige keer
-        $this->try_after =  now()->addMinutes((int)(10 * 1.5 ** ($this->attempts - 10)) + $wait);
+        $this->try_after = now()->addMinutes((int)(10 * 1.5 ** ($this->attempts - 10)) + $wait);
     }
 
     private function filter_integer_recursive(array $array, int $target): array
@@ -203,10 +221,26 @@ class Flow extends Model
                 $result[$key] = $value;
             }
         }
-        return $result;
+        return array_values($result);
     }
 
+    private static function getStackFromConfig(int $flow): ?array
+    {
+        $stack = config('laravel_salt.flows.' . ($flow?->value ?? $flow), false);
+        if (is_int($stack[0])) {
+            return $stack;
+        } else {
+            if (is_int($stack[0][0] ?? false)) {
+                return $stack;
+            }
+        }
+        if ($flow > 8000) {
+            return [8000]; //send only response/request (no return expected)
+        }
+        //TODO Als de stack Jobs bevat moeten deze nog even omgezet worden naar integers
+        return null;
 
+    }
 
     protected static function newFactory(): FlowFactory
     {

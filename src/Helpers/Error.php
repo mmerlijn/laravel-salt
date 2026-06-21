@@ -118,14 +118,8 @@ class Error
     }
     public function store():AppError
     {
-        $from = $this->fromObject;
-        $at = $this->atObject;
-        return AppError::create([
+        $appError = AppError::create([
             'level' => $this->level->value ?? 1,
-            'from_type' => is_object($from) ? $from::class : null,
-            'from_id' => is_object($this->fromObject) ? $this->fromObject->id: null,
-            'at_type' => is_object($at) ? $at::class : null,
-            'at_id' => is_object($this->atObject) ? $this->atObject->id: null,
             'message' => $this->message,
             'solution' => $this->solution,
             'trace' => $this->trace,
@@ -134,5 +128,14 @@ class Error
             'class' => $this->erroredClass,
             'notified' => [],
         ]);
+        if($this->fromObject){
+            $appError->from()->associate($this->fromObject);
+        }
+        if($this->atObject){
+            $appError->at()->associate($this->atObject);
+        }
+        $appError->save();
+        return $appError;
+
     }
 }

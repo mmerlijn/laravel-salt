@@ -22,18 +22,29 @@ Published files will be placed in:
 
 - `resources/views/vendor/laravel-salt`
 
+### Taken die periodiek uitgevoerd worden
+
+```php
+(PruneLocks)->everyMinute();
+(FlowRunnerJob)->everyMinute();
+
+```
 
 ## Flows
 
 ### Starten van een flow
 
 Een flow kan aangemaakt worden met
+
 ```php
 Flow::add(flow: <int|Enum>, payload: <Class|null>, wait: <int (minuten)>);
 ```
 
 ### Flow type
-De flow type bepaalt welke stack van taken uitgevoerd wordt. De flow type is een integer of Enum die in het configratie bestand is gedefinieerd.
+
+De flow type bepaalt welke stack van taken uitgevoerd wordt. De flow type is een integer of Enum die in het configratie
+bestand is gedefinieerd.
+
 ```php
     'flows'=>[
         10 => [101,103], //uitvoeren van taken 101, 103 (in deze volgorde)
@@ -42,7 +53,10 @@ De flow type bepaalt welke stack van taken uitgevoerd wordt. De flow type is een
 ```
 
 ### Stack van een flow
-Een flow bestaat uit een aantal Tasks (die in het configratie bestand zijn gedefinieerd). Deze taken staan in de 'stack' van de flow.
+
+Een flow bestaat uit een aantal Tasks (die in het configratie bestand zijn gedefinieerd). Deze taken staan in de 'stack'
+van de flow.
+
 ```php
     'tasks' => [
         //example
@@ -51,10 +65,14 @@ Een flow bestaat uit een aantal Tasks (die in het configratie bestand zijn gedef
     ...
 ```
 
-### Task 
-De Task kan van twee verschillende types zijn: Job of invokable class. In beide gevallen moet de Flow zelf worden meegegeven aan de Task.
+### Task
 
-Job: handig hierbij is om unique eigenschappen mee te geven aan de job Let op dat in de naam van de job 'Job' moet staan anders wordt de job niet herkend als een job.
+De Task kan van twee verschillende types zijn: Job of invokable class. In beide gevallen moet de Flow zelf worden
+meegegeven aan de Task.
+
+Job: handig hierbij is om unique eigenschappen mee te geven aan de job Let op dat in de naam van de job 'Job' moet staan
+anders wordt de job niet herkend als een job.
+
 ```php
     public int $uniqueFor = 60;
     public int $tries = 1;
@@ -77,7 +95,9 @@ Job: handig hierbij is om unique eigenschappen mee te geven aan de job Let op da
         //do something with the flow
     }
 ```
+
 Invokable class: handig hierbij is om unique eigenschappen mee te geven aan de job
+
 ```php
     public function __invoke(protected Flow $flow)
     {
@@ -86,10 +106,13 @@ Invokable class: handig hierbij is om unique eigenschappen mee te geven aan de j
 ```
 
 #### Uitvoeren van een taak
+
 ```php
 $flow->run();
 ```
+
 #### Uitvoeren van alle taken
+
 ```php
 Flow::runAll();
 ```
@@ -97,6 +120,7 @@ Flow::runAll();
 #### Resultaat van een task
 
 Succesvol uitgevoerd:
+
 ```php
 //Taak is succesvol uitgevoerd, de flow gaat verder met de volgende taak
 // - Volgende taak wordt direct uitgevoerd
@@ -108,6 +132,7 @@ $flow->prepend(<int|Enum|array> <int (minuten)>);
 ```
 
 Met problemen uitgevoerd:
+
 ```php
 // Opnieuw uitvoeren na backoff op basis van aantal pogingen
 $flow->retry(<null|int (minuten)>);
@@ -118,15 +143,22 @@ $flow->fail(appError: <AppError|null>,<null|int (minuten)>);
 ```
 
 ## Development
+
 Development list routes:
+
 ```bash 
 vendor/bin/testbench route:list
 ```
+
 Testing all tests:
+
 ```bash
 ./vendor/bin/test
-```
-Testing a specific test:
-```bash
+
+# or 
+./vendor/bin/pest --parallel
+
+# or testing one
 ./vendor/bin/test --filter=TestName
+
 ```

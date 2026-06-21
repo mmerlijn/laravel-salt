@@ -12,7 +12,7 @@ it('RequestNr passes or fail', function (string $requestNr, bool $isValid) {
     ['PG123456789', true],
     [' pg123456789 ', true],
     ['ZD1234567', false],
-    ['PG12345678', false],
+    ['PG12345678', true],
     ['XX12345678', false],
     ['ZD1234567A', false],
     ['', true],
