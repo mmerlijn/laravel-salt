@@ -183,6 +183,7 @@ return new class extends Migration {
         Schema::create('flows', function (Blueprint $table) {
             $table->id();
             $table->unsignedSmallInteger('type');
+            $table->unsignedBigInteger('exchange_id')->nullable();
             $table->string('payload_type', 50)->nullable();
             $table->unsignedBigInteger('payload_id')->nullable();
             $table->json('stack');
@@ -195,7 +196,7 @@ return new class extends Migration {
         });
         Schema::create('flow_exchanges', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('flow_id')->nullable();
+
             $table->unsignedSmallInteger('type')->default(0);
             $table->unsignedSmallInteger('port')->nullable();
             $table->mediumText('request');
