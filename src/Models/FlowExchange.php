@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
+use mmerlijn\LaravelSalt\Models\Traits\FlowModelTrait;
 use mmerlijn\LaravelSalt\Observers\FlowExchangeObserver;
 use Workbench\Database\Factories\FlowExchangeFactory;
 
@@ -27,7 +27,7 @@ use Workbench\Database\Factories\FlowExchangeFactory;
 #[ObservedBy(FlowExchangeObserver::class)]
 class FlowExchange extends Model
 {
-    use HasFactory;
+    use HasFactory, FlowModelTrait;
 
     protected $table = 'flow_exchanges';
 
@@ -51,11 +51,6 @@ class FlowExchange extends Model
         ];
     }
 
-
-    public function flows(): MorphMany
-    {
-        return $this->morphMany(Flow::class, 'payload');
-    }
 
     public function patient(): BelongsTo
     {
