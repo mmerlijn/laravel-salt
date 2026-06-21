@@ -5,7 +5,6 @@ namespace mmerlijn\LaravelSalt\Observers;
 
 use mmerlijn\LaravelSalt\Models\AppError;
 use mmerlijn\LaravelSalt\Models\Flow;
-use mmerlijn\LaravelSalt\Models\FlowExchange;
 use mmerlijn\LaravelSalt\Models\FlowLog;
 use mmerlijn\LaravelSalt\Models\FlowResponse;
 
@@ -42,11 +41,5 @@ class FlowObserver
         //more actions needed
         $flow->error?->delete();
     }
-
-    public function deleting(FlowExchange $flowExchange): void
-    {
-
-    }
-
 
 }

@@ -27,6 +27,8 @@ use Workbench\Database\Factories\FlowFactory;
  * @property int $payload_id
  * @property string $payload_type
  * @property int $type
+ * @property int $request_type
+ * @property int $response_type
  * @property Model|null $payload
  * @property array $data
  * @property string $request
@@ -61,7 +63,9 @@ class Flow extends Model
         'patient_id',
         'request_nr',
         'labtrain_id',
-        'active'
+        'active',
+        'request_type',
+        'response_type',
     ];
     protected $table = 'flows';
 

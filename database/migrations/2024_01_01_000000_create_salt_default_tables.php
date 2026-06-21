@@ -190,6 +190,8 @@ return new class extends Migration {
             $table->unsignedSmallInteger('attempts')->default(0);
             $table->timestamp('try_after')->default(now());
             $table->unsignedBigInteger('app_error_id')->nullable();
+            $table->unsignedSmallInteger('request_type')->default(0);
+            $table->unsignedSmallInteger('response_type')->default(0);
             $table->mediumText('request');
             $table->mediumText('response')->nullable();
             $table->unsignedBigInteger('patient_id')->nullable();
