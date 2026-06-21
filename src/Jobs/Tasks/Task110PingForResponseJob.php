@@ -46,8 +46,9 @@ class Task110PingForResponseJob implements ShouldQueue
             }
             $this->flow->retry(); //gaat later opnieuw kijken
         } else {
-            //TODO regel hier de error
-            logger()->error(__METHOD__ . " probleem geen exchange_id bij ping request to labtrain");
+            //Deze stap is waarschijnlijk niet nodig
+            $this->flow->done(self::class);
+            logger()->error("Geen exchange_id bij flow, waarschijnlijk niet nodig (ping)");
         }
 
     }

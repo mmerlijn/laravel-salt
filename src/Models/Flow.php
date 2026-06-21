@@ -181,7 +181,7 @@ class Flow extends Model
             $task = array_find_key(config('laravel_salt.tasks', []), fn($item) => $item == $task);
         }
         //remove task from stack
-        $this->stack = $this->filter_integer_recursive($this->stack, $task);
+        $this->stack = $this->filter_first_integer_recursive($this->stack, $task);
         $this->next(wait: $wait);
     }
 
@@ -227,18 +227,26 @@ class Flow extends Model
         $this->try_after = now()->addMinutes((int)(10 * 1.5 ** ($this->attempts - 10)) + $wait);
     }
 
-    private function filter_integer_recursive(array $array, int $target): array
+    private function filter_first_integer_recursive(array $array, int $target, bool &$found = false): array
     {
         $result = [];
+
         foreach ($array as $key => $value) {
             if (is_array($value)) {
-                // Als de waarde een array is, filteren we die eerst recursief
-                $result[$key] = $this->filter_integer_recursive($value, $target);
-            } elseif ($value !== $target) {
-                // Als het een integer is en NIET de target, behouden we hem
+                // We geven &$found mee, zodat de diepere niveaus weten of er al iets is verwijderd
+                $result[$key] = $this->filter_first_integer_recursive($value, $target, $found);
+            } else {
+                // Als we de target vinden én we hebben hem nog niet eerder gevonden...
+                if ($value === $target && !$found) {
+                    $found = true; // Markeer als gevonden, deze waarde wordt NIET toegevoegd
+                    continue;
+                }
+
+                // In alle andere gevallen behouden we de waarde
                 $result[$key] = $value;
             }
         }
+
         return array_values($result);
     }
 
