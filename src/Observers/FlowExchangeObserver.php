@@ -7,6 +7,7 @@ use mmerlijn\LaravelSalt\Models\FlowExchangeLog;
 
 class FlowExchangeObserver
 {
+
     public function deleting(FlowExchange $flowExchange): void
     {
         $fields = ['type', 'payload_type', 'payload_id', 'attempts'];

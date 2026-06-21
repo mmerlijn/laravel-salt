@@ -29,7 +29,7 @@ class ListenForExchangesJob implements ShouldQueue
 
     public function handle(): void
     {
-        foreach (FlowExchange::whereDoesntHave('flows')->cursor() as $flowExchange) {
+        foreach (FlowExchange::whereDoesntHave('flows', fn($q) => $q->whereNull('exchange_id'))->cursor() as $flowExchange) {
             Flow::add($flowExchange->type, $flowExchange);
         }
     }

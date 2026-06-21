@@ -195,6 +195,7 @@ return new class extends Migration {
         });
         Schema::create('flow_exchanges', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('flow_id')->nullable();
             $table->unsignedSmallInteger('type')->default(0);
             $table->unsignedSmallInteger('port')->nullable();
             $table->mediumText('request');

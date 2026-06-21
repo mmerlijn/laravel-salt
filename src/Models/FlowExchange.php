@@ -21,6 +21,8 @@ use Workbench\Database\Factories\FlowExchangeFactory;
  * @property string $request_nr
  * @property int $port
  * @property Patient $patient
+ * @property int $labtrain_id
+ * @property Flow[] $flows
  */
 #[ObservedBy(FlowExchangeObserver::class)]
 class FlowExchange extends Model
@@ -37,7 +39,8 @@ class FlowExchange extends Model
         'type',
         'patient_id',
         'request_nr',
-        'port'
+        'port',
+        'labtrain_id',
     ];
 
     protected function casts(): array
@@ -47,6 +50,7 @@ class FlowExchange extends Model
             'response_at' => 'datetime',
         ];
     }
+
 
     public function flows(): MorphMany
     {

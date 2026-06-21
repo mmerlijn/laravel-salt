@@ -12,6 +12,7 @@ use mmerlijn\LaravelSalt\Models\FlowResponse;
 class FlowObserver
 {
 
+
     public function deleting(Flow $flow): void
     {
         if (!$flow->payload_id) {

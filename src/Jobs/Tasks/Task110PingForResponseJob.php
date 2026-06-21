@@ -9,17 +9,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use mmerlijn\LaravelSalt\Actions\Tasks\SendResponses\ResponseToHttp;
-use mmerlijn\LaravelSalt\Actions\Tasks\SendResponses\ResponseToHttpMirth;
-use mmerlijn\LaravelSalt\Actions\Tasks\SendResponses\ResponseToMirth;
-use mmerlijn\LaravelSalt\Actions\Tasks\SendResponses\ResponseToMirthHttp;
-use mmerlijn\LaravelSalt\Enums\ErrorLevelEnum;
-use mmerlijn\LaravelSalt\Enums\SendTypeEnum;
-use mmerlijn\LaravelSalt\Helpers\Error;
 use mmerlijn\LaravelSalt\Models\Flow;
-use mmerlijn\LaravelSalt\Models\FlowExchange;
 
-class GetLabtrainPatientNrJob implements ShouldQueue
+class Task110PingForResponseJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -40,47 +32,24 @@ class GetLabtrainPatientNrJob implements ShouldQueue
 
     public function uniqueId(): string
     {
-        return 'flow-250-' . $this->flow->id;
+        return 'flow-' . $this->flow->task . '-' . $this->flow->id;
     }
 
     public function handle(): void
     {
-        if (!$this->flow->payload->patient_id) {
-            $this->flow->prepend(255); //versturen van aanvraag voor patientnr
-        }
-        if ($this->flow->payload->patient->labtrain_id) { //patient heeft al nummer
-            $this->flow->done(self::class);
-        }
-        if (!$this->flow->payload->request_nr) {
-            $this->flow->prepend(100);
-        }
-        $f = FlowExchange::create([
-            'type' => '8250',
-            'request' => json_encode(["requestType" => "ZorgDomein", "request_nr" => "FU8100625699"])
-        ]);
 
-
-        try {
-            $to = match (config('laravel_salt.mirth_ports')[$this->flow->payload->type][1] ?? SendTypeEnum::MIRTH_TCP) {
-                SendTypeEnum::MIRTH_TCP => new ResponseToMirth()($this->flow->payload),
-                SendTypeEnum::MIRTH_HTTP => new ResponseToMirthHttp()($this->flow->payload),
-                SendTypeEnum::HTTP => new ResponseToHttp()($this->flow->payload),
-            };
-            $this->flow->done(self::class);
-        } catch (\Exception $e) {
-            if ($this->flow->attempts > 3) {
-                logger()->error("Error sending response for flow id {$this->flow->id} with type {$this->flow->payload->type}: " . $e->getMessage() . "\n" . $e->getTraceAsString());
-                $this->flow->fail(new Error(
-                    level: ErrorLevelEnum::SYSTEEMBEHEER,
-                    fromObject: $this->flow->payload,
-                    exception: $e,
-                    solution: "Zijn alle porten open, is er een vreemde opmaak in het bericht, is er een netwerk fout?",
-                    notify: true,
-                    erroredClass: self::class,
-                )->store());
+        if ($this->flow->exchange_id) {
+            if ($this->flow->exchange->response_at) {
+                $this->flow->done(self::class); //volgende stap
+                $this->flow->exchange->delete(); //niet meer nodig
+                return;
             }
+            $this->flow->retry(); //gaat later opnieuw kijken
+        } else {
+            //TODO regel hier de error
+            logger()->error(__METHOD__ . " probleem geen exchange_id bij ping request to labtrain");
         }
-        $this->flow->fail(null, 10); //probeer gewoon nog een keer
+
     }
 
 }

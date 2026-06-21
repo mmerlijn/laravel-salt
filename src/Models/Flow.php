@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\UseResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
@@ -29,6 +30,8 @@ use Workbench\Database\Factories\FlowFactory;
  * @property int $type
  * @property Model|null $payload
  * @property array $data
+ * @property int $exchange_id
+ * @property FlowExchange $exchange
  */
 #[UseResource(FlowResource::class), ObservedBy(FlowObserver::class)]
 class Flow extends Model
@@ -44,7 +47,8 @@ class Flow extends Model
         'attempts',
         'try_after',
         'store',
-        'data'
+        'data',
+        'exchange_id'
     ];
     protected $table = 'flows';
 
@@ -57,6 +61,11 @@ class Flow extends Model
         ];
     }
 
+    public function exchange(): BelongsTo
+    {
+        return $this->belongsTo(FlowExchange::class, 'exchange_id');
+    }
+
     public function appErrors(): MorphMany
     {
         return $this->morphMany(AppError::class, 'from');
@@ -65,6 +74,11 @@ class Flow extends Model
     public function error(): BelongsTo
     {
         return $this->belongsTo(AppError::class, 'app_error_id');
+    }
+
+    public function exchanges(): HasMany
+    {
+        return $this->hasMany(FlowExchange::class, 'flow_id');
     }
 
     public function payload(): MorphTo
@@ -147,12 +161,16 @@ class Flow extends Model
         $this->save();
     }
 
-    public function fail(?AppError $appError = null, int $wait = 0): void
+    public function fail(null|string|AppError $appError = null, int $wait = 0): void
     {
         $this->attempts++;
         $this->wait(wait: $wait);
-        if ($appError) {
+        if ($appError instanceof AppError) {
             $this->app_error_id = $appError->id;
+        } elseif (is_string($appError)) { //geen reden om te stoppen
+            $data = $this->data;
+            $data['error'] = $appError;
+            $this->data = $data;
         }
         $this->save();
     }
