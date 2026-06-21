@@ -186,7 +186,7 @@ return new class extends Migration {
             $table->boolean('active')->default(0);
             $table->string('payload_type', 50)->nullable();
             $table->unsignedBigInteger('payload_id')->nullable();
-            $table->json('stack')->default(json_encode([]));
+            $table->json('stack')->nullable();
             $table->unsignedSmallInteger('attempts')->default(0);
             $table->timestamp('try_after')->default(now());
             $table->unsignedBigInteger('app_error_id')->nullable();
