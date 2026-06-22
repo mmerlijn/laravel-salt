@@ -104,14 +104,16 @@ class Flow extends Model
             $ae = new Error(level: ErrorLevelEnum::MENNO, message: "Flow $flow has no configuration in laravel-salt.config", notify: true)->store();
         }
         if ($payload) {
-            return $payload->flows()->createOrUpdate([
-                'type' => $flow,
+            return Flow::updateOrCreate([
+                'payload_id' => $payload->id,
+                'payload_type' => $payload->getMorphClass(),
+                'type' => $flow
             ], [
-                'active' => 1,
                 'stack' => $stack,
-                'try_after' => now()->addMinutes($wait)->subSecond(),
-                'app_error_id' => $ae->id ?? null,
+                'active' => true,
                 'data' => $data,
+                'app_error_id' => $ae?->id ?? null,
+                'try_after' => now()->addMinutes($wait)->subSecond(),
             ]);
         }
         return self::create([
