@@ -231,6 +231,15 @@ class Flow extends Model
         $this->run();
     }
 
+    public function runAfterThis(int|array|BackedEnum $task): void
+    {
+        $stack = $this->stack;
+        array_splice($stack, 1, 0, $task->value ?? $task);
+        $this->stack = $stack;
+        $this->save();
+
+    }
+
     private function next(int $wait = 0): void
     {
         if (empty($this->stack)) {
