@@ -97,19 +97,21 @@ class Flow extends Model
         return $this->morphTo();
     }
 
-    public static function add(int|BackedEnum $flow, ?Model $payload, $wait = 0): self
+    public static function add(int|BackedEnum $flow, null|Model $payload, $wait = 0, array $data = []): self
     {
         $stack = self::getStackFromConfig($flow?->value ?? $flow);
         if (!$stack) {
             $ae = new Error(level: ErrorLevelEnum::MENNO, message: "Flow $flow has no configuration in laravel-salt.config", notify: true)->store();
         }
         if ($payload) {
-            return $payload->flows()->create([
+            return $payload->flows()->createOrUpdate([
                 'type' => $flow,
+            ], [
                 'active' => 1,
                 'stack' => $stack,
                 'try_after' => now()->addMinutes($wait)->subSecond(),
                 'app_error_id' => $ae->id ?? null,
+                'data' => $data,
             ]);
         }
         return self::create([
@@ -118,6 +120,7 @@ class Flow extends Model
             'stack' => $stack,
             'app_error_id' => $ae->id ?? null,
             'try_after' => now()->addMinutes($wait)->subSecond(),
+            'data' => $data,
         ]);
     }
 
