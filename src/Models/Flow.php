@@ -19,11 +19,11 @@ use Workbench\Database\Factories\FlowFactory;
 
 
 /**
- * @property null|AppError $error
+ * @property null|FlowError $error
  * @property array $stack
  * @property Carbon $try_after
  * @property int $attempts
- * @property int $app_error_id
+ * @property int $flow_error_id
  * @property int $payload_id
  * @property string $payload_type
  * @property int $type
@@ -46,7 +46,7 @@ class Flow extends Model
     protected $fillable = [
         'type',
         'stack',
-        'app_error_id',
+        'flow_error_id',
         'payload_id',
         'payload_type',
         'attempts',
@@ -84,7 +84,7 @@ class Flow extends Model
 
     public function error(): BelongsTo
     {
-        return $this->belongsTo(AppError::class, 'app_error_id');
+        return $this->belongsTo(FlowError::class, 'flow_error_id');
     }
 
 
@@ -93,38 +93,53 @@ class Flow extends Model
         return $this->morphTo();
     }
 
-    public static function add(int|BackedEnum $flow, ?Model $payload, $wait = 0): self
+    public static function add(int|BackedEnum $flow, ?Model $payload, $wait = 0, array $data = []): self
     {
         $stack = self::getStackFromConfig($flow?->value ?? $flow);
         if (!$stack) {
-            $ae = new Error(level: ErrorLevelEnum::MENNO, message: "Flow $flow has no configuration in laravel-salt.config", notify: true)->store();
+            $fe = FlowError::create([
+                'level' => ErrorLevelEnum::MENNO,
+                'from_type' => self::class,
+                'from_id' => $payload?->id ?? null,
+                'message' => "Flow $flow has no stack configured in laravel_salt.config",
+                'notify' => true,
+               
+            ]);
         }
         if ($payload) {
-            return $payload->flows()->create([
+            return Flow::updateOrCreate([
+                'payload_id' => $payload->id,
+                'payload_type' => $payload->getMorphClass(),
                 'type' => $flow,
+            ], [
                 'stack' => $stack,
                 'try_after' => now()->addMinutes($wait)->subSecond(),
-                'app_error_id' => $ae->id ?? null,
+                'attempts' => 0,
+                'flow_error_id' => $fe->id ?? null,
+                 'active'=>true,
+                 'data' => $data
             ]);
         }
         return self::create([
             'type' => $flow,
             'stack' => $stack,
-            'app_error_id' => $ae->id ?? null,
+            'flow_error_id' => $fe->id ?? null,
             'try_after' => now()->addMinutes($wait)->subSecond(),
+             'active'=>true,
+             'data' => $data
         ]);
     }
 
     public static function runAll(): void
     {
-        foreach (self::whereNull('app_error_id')
+        foreach (self::whereNull('flow_error_id')
                      ->whereActive(false)
                      ->cursor() as $flow) {
             $flow->stack = self::getStackFromConfig($flow?->value ?? $flow);
             $flow->active = true;
             $flow->save();
         }
-        foreach (self::whereNull('app_error_id')
+        foreach (self::whereNull('flow_error_id')
                      ->where('try_after', '<', now())
                      ->whereActive(true)
                      ->cursor() as $flow) {
@@ -132,14 +147,7 @@ class Flow extends Model
         }
     }
 
-    public function clearResponseAndRequest(): void
-    {
-        $this->response_at = null;
-        $this->request_at = null;
-        $this->response = null;
-        $this->request = null;
-        $this->save();
-    }
+
 
     public function run(): void
     {
@@ -147,7 +155,7 @@ class Flow extends Model
             $this->delete();
             return;
         }
-        if ($this->app_error_id) {
+        if ($this->flow_error_id) {
             return; //los eerst het probleem op
         }
         if ($this->try_after->isAfter(now())) {
@@ -168,16 +176,42 @@ class Flow extends Model
                     new $t()($this);
                 }
             } else {
-                $this->app_error_id = new Error(
-                    level: ErrorLevelEnum::MENNO,
-                    fromObject: $this,
-                    message: "Flow task $task has no class configured in laravel-salt.config")
-                    ->store()->id;
+                $this->flow_error_id = 
+                FlowError::create([
+                    'level' => ErrorLevelEnum::MENNO,
+                    'from' => 'flow',
+                    'from_id' => $this->id,
+                    'message' => "Flow task $task has no class configured in laravel-salt.config",
+                    'notify' => true,
+                ])->id;
                 $this->save();
             }
         }
     }
 
+    public function fail(
+        int $wait = 0,
+        Error|Exception $exception = null,
+        int|array $runBefore=0,
+        int|array $runBeforeAfterMaxAttempts=0,
+        int $maxAttempts = 0,
+        bool $reset = false
+        int $notifyAfterAttempts=0,
+        ?string $solution=null,
+        bool $notifyAfterException=true,
+        bool $notifyAfterMaxAttempts=true,
+        bool $resetResonse=false,
+        bool $resetRequest=false):void{
+
+    }
+    public function done(
+        int $wait = 0,
+        int|array $runNext=0,
+        int|array $skipTask=0,
+    ):void
+    {
+
+    }
     public function retry(int $wait = 0): void
     {
         $this->attempts += 1;
@@ -190,7 +224,7 @@ class Flow extends Model
         $this->attempts++;
         $this->wait(wait: $wait);
         if ($appError instanceof AppError) {
-            $this->app_error_id = $appError->id;
+            $this->flow_error_id = $appError->id;
         } elseif (is_string($appError)) { //geen reden om te stoppen
             $data = $this->data;
             $data['error'] = $appError;
@@ -291,7 +325,14 @@ class Flow extends Model
         return null;
 
     }
-
+    private function clearResponseAndRequest(): void
+    {
+        $this->response_at = null;
+        $this->request_at = null;
+        $this->response = null;
+        $this->request = null;
+        $this->save();
+    }
     protected static function newFactory(): FlowFactory
     {
         return FlowFactory::new();
