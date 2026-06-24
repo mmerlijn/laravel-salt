@@ -10,6 +10,7 @@ class QueueHeartBeat
 
     }
 
+    //true = online, false = down
     public function online(): bool
     {
         $lastHeartbeat = cache('queue_last_heartbeat');
