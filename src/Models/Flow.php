@@ -210,7 +210,7 @@ class Flow extends Model
     {
         $this->attempts += 1;
         $this->nextAttemptAt(wait: $wait);
-        if ($this->attempts > $maxAttempts) {
+        if ($maxAttempts and $this->attempts > $maxAttempts) {
             $exception = $exception ?? new \Exception("Maximum number of attempts reached");
         }
         if ($exception) {
@@ -277,7 +277,9 @@ class Flow extends Model
             $this->stack = $this->filter_integer_recursive($this->stack, $skipTask);
         }
         $this->save();
-        $this->run();
+        if (!$wait) {
+            $this->run();
+        }
 
     }
 
