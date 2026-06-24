@@ -254,7 +254,6 @@ class Flow extends Model
             $action($this);
         }
         $this->save();
-        $this->run();
     }
 
     public function done(
