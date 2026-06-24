@@ -11,6 +11,7 @@ use mmerlijn\LaravelSalt\Helpers\Toast;
 use mmerlijn\LaravelSalt\Helpers\ToastInterface;
 use mmerlijn\LaravelSalt\Jobs\FlowRunnerJob;
 use mmerlijn\LaravelSalt\Jobs\PruneLocks;
+use mmerlijn\LaravelSalt\Jobs\QueueHeartBeatJob;
 use mmerlijn\LaravelSalt\Models\Flow;
 use mmerlijn\LaravelSalt\Models\FlowError;
 use mmerlijn\LaravelSalt\Models\Requester;
@@ -82,6 +83,8 @@ class LaravelSaltServiceProvider extends ServiceProvider
                 $schedule->job(new FlowRunnerJob)->everyMinute();
                 // Opschonen van de locks
                 $schedule->job(new PruneLocks, 'low')->everyMinute();
+
+                $schedule->job(new QueueHeartBeatJob)->everyMinute();
             });
 
         }
