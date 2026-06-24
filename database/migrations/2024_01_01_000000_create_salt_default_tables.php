@@ -207,8 +207,6 @@ return new class extends Migration {
             $table->id();
             $table->unsignedSmallInteger('type')->default(0);
             $table->unsignedSmallInteger('attempts')->default(0);
-            $table->mediumText('request')->nullable();
-            $table->mediumText('response')->nullable();
             $table->timestamp('request_at')->nullable();
             $table->timestamp('response_at')->nullable();
             $table->string('payload_type', 100)->nullable();
@@ -216,7 +214,6 @@ return new class extends Migration {
             $table->unsignedBigInteger('patient_id')->nullable();
             $table->unsignedBigInteger('labtrain_id')->nullable();
             $table->string('request_nr')->nullable();
-            $table->json('data')->nullable();
             $table->timestamps();
         });
     }

@@ -24,9 +24,6 @@ class FlowLog extends Model
     protected $table = 'flow_logs';
 
     protected $fillable = [
-        'flow',
-        'request',
-        'response',
         'request_at',
         'response_at',
         'type',
@@ -36,7 +33,6 @@ class FlowLog extends Model
         'payload_id',
         'payload_type',
         'attempts',
-        'data',
     ];
 
     protected function casts(): array
@@ -44,7 +40,6 @@ class FlowLog extends Model
         return [
             'request_at' => 'datetime',
             'response_at' => 'datetime',
-            'flow' => 'array',
         ];
     }
 

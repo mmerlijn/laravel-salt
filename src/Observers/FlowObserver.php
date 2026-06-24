@@ -15,8 +15,6 @@ class FlowObserver
     {
         FlowLog::create([
             'type' => $flow->type,
-            'request' => $flow->request,
-            'response' => $flow->response,
             'patient_id' => $flow->patient_id,
             'request_nr' => $flow->request_nr,
             'labtrain_id' => $flow->labtrain_id,
@@ -25,7 +23,6 @@ class FlowObserver
             'payload_id' => $flow->payload_id,
             'payload_type' => $flow->payload_type,
             'attempts' => $flow->attempts,
-            'data' => $flow->data,
         ]);
     }
 
