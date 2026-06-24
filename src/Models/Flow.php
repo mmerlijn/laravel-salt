@@ -219,9 +219,9 @@ class Flow extends Model
             ], [
                 'level' => $errorLevel?->value ?? $errorLevel,
                 'from_type' => $this->payload?->getMorphClass(),
-                'from_id' => $this->payload?->primaryKey,
+                'from_id' => $this->payload?->{$this->payload->getKeyName()},
                 'at_type' => $errorAt?->getMorphClass(),
-                'at_id' => $errorAt?->primaryKey,
+                'at_id' => $errorAt?->{$errorAt->getKeyName()},
                 'class' => $errorClass,
                 'solution' => $solution,
                 'message' => $exception->getMessage(),
