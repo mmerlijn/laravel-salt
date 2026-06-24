@@ -173,7 +173,7 @@ return new class extends Migration {
             $table->text('message')->nullable();
             $table->mediumText('trace')->nullable();
             $table->boolean('notify')->default(0);
-            $table->json('notified')->default('[]'); //emails send to
+            $table->json('notified')->nullable(); //emails send to
             $table->index(['deleted_at', 'flow_id'], 'flow_error_ind');
             $table->timestamps();
             $table->softDeletes();
