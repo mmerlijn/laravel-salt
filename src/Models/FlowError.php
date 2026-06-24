@@ -31,24 +31,28 @@ use Workbench\Database\Factories\FlowErrorFactory;
  * @property array $notified
  * @property null|object $from
  * @property null|object $at
+ * @property int $id
  */
-#[UseResource(FlowErrorResource::class),ObservedBy(FlowErrorObserver::class)]
+#[UseResource(FlowErrorResource::class), ObservedBy(FlowErrorObserver::class)]
 class FlowError extends Model
 {
     use HasFactory, SoftDeletes, MassPrunable;
 
     protected $fillable = [
-        'app_error_id',
         'from',
         'at',
         'level',
         'solution',
         'message',
         'trace',
-        'exception_class',
         'notify',
         'notified',
         'class',
+        'from_id',
+        'from_type',
+        'at_id',
+        'at_type',
+        'flow_id',
     ];
     protected $table = 'flow_errors';
 
@@ -56,7 +60,6 @@ class FlowError extends Model
     {
         return [
             'notified' => 'array',
-            'level' => ErrorLevelEnum::class,
             'notify' => 'boolean',
         ];
     }
@@ -97,10 +100,12 @@ class FlowError extends Model
     {
         return $this->hasMany(Flow::class, 'flow_error_id');
     }
+
     public function prunable(): Builder
     {
         return static::query()->where('deleted_at', '<=', now()->minus(months: 9));
     }
+
     public function pruning(): void
     {
         $this->flows()?->update(['flow_error_id' => null]);

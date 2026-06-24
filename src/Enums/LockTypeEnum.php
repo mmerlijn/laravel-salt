@@ -29,7 +29,7 @@ enum LockTypeEnum: string
     case organization = 'organization';
     case helpline_detail = 'helpline-detail';
     case functie_detail = 'functie-detail';
-    case app_errors = 'app-errors';
+    case flow_error = 'flow-error';
 
 
     public function label(): string
@@ -47,7 +47,7 @@ enum LockTypeEnum: string
             LockTypeEnum::test => 'test',
             LockTypeEnum::employee => 'employee',
             LockTypeEnum::close => 'close',
-            LockTypeEnum::app_errors => 'app-errors',
+            LockTypeEnum::flow_error => 'app-error',
             LockTypeEnum::helpline_detail => 'helpline-detail',
             LockTypeEnum::functie_detail => 'functie-detail',
         };

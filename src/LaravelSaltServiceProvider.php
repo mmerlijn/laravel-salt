@@ -11,11 +11,8 @@ use mmerlijn\LaravelSalt\Helpers\Toast;
 use mmerlijn\LaravelSalt\Helpers\ToastInterface;
 use mmerlijn\LaravelSalt\Jobs\FlowRunnerJob;
 use mmerlijn\LaravelSalt\Jobs\PruneLocks;
-use mmerlijn\LaravelSalt\Models\AppError;
 use mmerlijn\LaravelSalt\Models\Flow;
-use mmerlijn\LaravelSalt\Models\FlowExchange;
-use mmerlijn\LaravelSalt\Models\FlowRequest;
-use mmerlijn\LaravelSalt\Models\FlowResponse;
+use mmerlijn\LaravelSalt\Models\FlowError;
 use mmerlijn\LaravelSalt\Models\Requester;
 
 class LaravelSaltServiceProvider extends ServiceProvider
@@ -51,11 +48,8 @@ class LaravelSaltServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Relation::morphMap([
-            'flow-request' => FlowRequest::class,
-            'flow-response' => FlowResponse::class,
             'flow' => Flow::class,
-            'flow-exchange' => FlowExchange::class,
-            'app-error' => AppError::class,
+            'flow-error' => FlowError::class,
             'requester' => Requester::class,
         ]);
         $this->loadRoutesFrom(__DIR__ . '/../routes/laravel-salt.php');

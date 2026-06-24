@@ -14,8 +14,8 @@ class FlowController
     {
         $query = Flow::query()->with('error');
 
-        if ($request->filled('app_error_id')) {
-            $query->where('app_error_id', $request->integer('app_error_id'));
+        if ($request->filled('flow_error_id')) {
+            $query->where('flow_error_id', $request->integer('flow_error_id'));
         }
 
         if ($request->filled('type')) {

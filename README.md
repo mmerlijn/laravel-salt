@@ -37,7 +37,7 @@ Published files will be placed in:
 Een flow kan aangemaakt worden met
 
 ```php
-Flow::add(flow: <int|Enum>, payload: <Class|null>, wait: <int (minuten)>);
+Flow::add(flow: <int|Enum>, payload: <Class|array|null>, wait: <int (minuten)>, data: <array>);
 ```
 
 ### Flow type
@@ -74,22 +74,7 @@ Job: handig hierbij is om unique eigenschappen mee te geven aan de job Let op da
 anders wordt de job niet herkend als een job.
 
 ```php
-    public int $uniqueFor = 60;
-    public int $tries = 1;
-    public int $maxExceptions = 0;
-
-    public function uniqueVia(): Repository
-    {
-        return Cache::driver('database');
-    }
-    public function uniqueId(): string
-    {
-        return 'flow-<nr>-'.$this->flow->id;
-    }
-    public function __construct(protected Flow $flow)
-    {
-        //do something with the flow
-    }
+    use mmerlijn\LaravelSalt\Jobs\Tasks\TaskJobTrait;
     public function handle()
     {
         //do something with the flow
@@ -124,21 +109,32 @@ Succesvol uitgevoerd:
 ```php
 //Taak is succesvol uitgevoerd, de flow gaat verder met de volgende taak
 // - Volgende taak wordt direct uitgevoerd
-$flow->done(wait: <int>(minuten)> );
-
-// Er wordt een nieuwe taak aan de start van de stack toegevoegd
-// - Volgende taak wordt direct uitgevoerd
-$flow->prepend(<int|Enum|array> <int (minuten)>);
+$flow->done(
+        int|string $task,
+        int        $wait = 0,
+        int|array  $runNext = 0,
+        int|array  $skipTask = 0,
+    );
 ```
 
 Met problemen uitgevoerd:
 
 ```php
-// Opnieuw uitvoeren na backoff op basis van aantal pogingen
-$flow->retry(<null|int (minuten)>);
-
-// Flow is mislukt, indien een AppError wordt meegestuurd stopt de flow totdat de AppError is opgelost. Indien een aantal minuten wordt meegestuurd wordt de flow na dat aantal minuten opnieuw uitgevoerd.
-$flow->fail(appError: <AppError|null>,<null|int (minuten)>);
+// Flow is mislukt, indien een FlowError wordt meegestuurd stopt de flow totdat de FlowError is opgelost. Indien een aantal minuten wordt meegestuurd wordt de flow na dat aantal minuten opnieuw uitgevoerd.
+$flow->fail(
+        int               $wait = 0,
+        \Error|\Exception $exception = null,
+        int|array         $runBefore = 0,
+        int|array         $runBeforeAfterMaxAttempts = 0,
+        int               $maxAttempts = 0,
+        bool              $reset = false,
+        int               $notifyAfterAttempts = 0,
+        ?string           $solution = null,
+        bool              $notifyAfterException = true,
+        bool              $notifyAfterMaxAttempts = true,
+        bool              $resetResponse = false,
+        bool              $resetRequest = false
+        );
 
 ```
 
@@ -153,7 +149,7 @@ vendor/bin/testbench route:list
 Testing all tests:
 
 ```bash
-./vendor/bin/test
+./vendor/bin/pest
 
 # or 
 ./vendor/bin/pest --parallel

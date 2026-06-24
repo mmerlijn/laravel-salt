@@ -17,7 +17,7 @@ class Task100GetRequestNrFromHl7Job implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TaskJobTrait;
 
-
+//Todo helemaal aanpassen
     public function handle(): void
     {
         try {
@@ -30,14 +30,12 @@ class Task100GetRequestNrFromHl7Job implements ShouldQueue
             $v->validate();
             $this->flow->done(self::class);
         } catch (\Exception $e) {
-            $this->flow->fail(new Error(
-                level: ErrorLevelEnum::SYSTEEMBEHEER,
-                fromObject: $this->flow,
+            $this->flow->fail(
                 exception: $e,
                 solution: "Zorg voor een valide aanvraagnr in het HL7 bericht",
-                notify: false,
-                erroredClass: self::class,
-            )->store());
+                errorLevel: ErrorLevelEnum::SYSTEEMBEHEER,
+                errorClass: self::class,
+            );
         }
     }
 }

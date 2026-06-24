@@ -1,7 +1,7 @@
 <?php
 
-use mmerlijn\LaravelSalt\Models\AppError;
 use mmerlijn\LaravelSalt\Models\Flow;
+use mmerlijn\LaravelSalt\Models\FlowError;
 use mmerlijn\LaravelSalt\Models\Note;
 use mmerlijn\LaravelSalt\Models\Patient;
 use mmerlijn\LaravelSalt\Models\Requester;
@@ -9,11 +9,11 @@ use mmerlijn\LaravelSalt\Models\Requester;
 it('can create records with package factories', function () {
     $patient = Patient::factory()->create();
     $requester = Requester::factory()->create();
-    $appError = AppError::factory()->create();
+    $flowError = FlowError::factory()->create();
 
     $flow = Flow::factory()
-        ->payload(Patient::class, $patient->id)
-        ->appError($appError)
+        ->payload($patient)
+        ->error($flowError)
         ->create();
 
     $note = Note::factory()
@@ -22,7 +22,7 @@ it('can create records with package factories', function () {
 
     expect($patient->exists)->toBeTrue()
         ->and($requester->exists)->toBeTrue()
-        ->and($appError->exists)->toBeTrue()
+        ->and($flowError->exists)->toBeTrue()
         ->and($flow->exists)->toBeTrue()
         ->and($note->exists)->toBeTrue();
 });

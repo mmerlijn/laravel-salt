@@ -1,33 +1,30 @@
 <?php
 
 use mmerlijn\LaravelSalt\Actions\Tasks\GetRequestNrFromHl7;
-use mmerlijn\LaravelSalt\Jobs\Tasks\GetRequestNrFromHl7Job;
+use mmerlijn\LaravelSalt\Jobs\Tasks\Task100GetRequestNrFromHl7Job;
 use mmerlijn\LaravelSalt\Models\Flow;
-use mmerlijn\LaravelSalt\Models\FlowExchange;
-use mmerlijn\LaravelSalt\Models\FlowExchangeLog;
+use mmerlijn\LaravelSalt\Models\FlowLog;
 
 it('Can find request_nr from HL7 or return null', function (string $hl7, ?string $expected) {
 
     $request_nr = new GetRequestNrFromHl7()($hl7);
     expect($request_nr)->toBe($expected);
 
-    config()->set('laravel_salt.tasks.100', GetRequestNrFromHl7Job::class);
+    config()->set('laravel_salt.tasks.100', Task100GetRequestNrFromHl7Job::class);
     config()->set('laravel_salt.flows.10', [100]);
     //Nu via de Job on the Flow
-    $r = FlowExchange::factory()->create([
+    $r = Flow::factory()->create([
         'type' => 10,
         'request' => $hl7,
         'request_at' => now(),
     ]);
-    \mmerlijn\LaravelSalt\Jobs\ListenForExchangesJob::dispatchSync();
     \mmerlijn\LaravelSalt\Jobs\FlowRunnerJob::dispatchSync();
-    //De aanvraag is al verwijderd omdat de stack leeg is
 
-    $appError = \mmerlijn\LaravelSalt\Models\AppError::first();
-    if ($appError) {
-        expect($appError)->message->toBe("Geen geldig aanvraagnummer.");
+    $flowError = \mmerlijn\LaravelSalt\Models\FlowError::first();
+    if ($flowError) {
+        expect($flowError)->message->toBe("Geen geldig aanvraagnummer.");
     } else {
-        expect(FlowExchangeLog::first())
+        expect(FlowLog::first())
             ->request_nr->toBe($expected)
             ->and(Flow::all())->toBeEmpty();
     }

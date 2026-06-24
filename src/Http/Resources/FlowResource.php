@@ -14,13 +14,25 @@ class FlowResource extends JsonResource
         return [
             'id' => $this->id,
             'type' => $this->type?->value ?? $this->type,
+            'active' => $this->active,
             'stack' => $this->stack,
             'attempts' => $this->attempts,
             'try_after' => $this->try_after?->toDateTimeString(),
-            'app_error_id' => $this->app_error_id,
+            'flow_error_id' => $this->flow_error_id,
             'payload_type' => $this->payload_type,
             'payload_id' => $this->payload_id,
-            'error' => $this->whenLoaded('error', fn () => AppErrorResource::make($this->error)),
+            'payload' => $this->payload?->toResource(),
+            'error' => $this->whenLoaded('error', fn() => $this->error->toResource()),
+            'response' => $this->response,
+            'request' => $this->request,
+            'response_at' => $this->response_at,
+            'request_at' => $this->request_at,
+            'response_type' => $this->response_type,
+            'request_type' => $this->request_type,
+            'data' => $this->data,
+            'request_nr' => $this->request_nr,
+            'patient_id' => $this->patient_id,
+            'labtrain_id' => $this->labtrain_id,
         ];
     }
 }

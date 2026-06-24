@@ -16,10 +16,9 @@ class Task110PingForResponseJob implements ShouldQueue
     {
         if ($this->flow->response_at) {
             $this->flow->done(self::class); //volgende stap
-            $this->flow->request->delete(); //niet meer nodig
             return;
         }
-        $this->flow->retry(); //gaat later opnieuw kijken
+        $this->flow->fail(); //gaat later opnieuw kijken
 
     }
 

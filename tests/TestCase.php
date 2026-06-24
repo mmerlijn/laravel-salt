@@ -2,13 +2,16 @@
 
 namespace mmerlijn\LaravelSalt\Tests;
 
+use Illuminate\Database\Eloquent\Relations\Relation;
 use mmerlijn\LaravelSalt\LaravelSaltServiceProvider;
+use mmerlijn\LaravelSalt\Models\Patient;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
 {
     use WithWorkbench;
+
     protected function getPackageProviders($app): array
     {
         return [LaravelSaltServiceProvider::class];
@@ -23,13 +26,14 @@ class TestCase extends BaseTestCase
         // Als je package eigen migraties heeft, laad je die hier ook meteen:
         // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
+
     protected function defineEnvironment($app): void
     {
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
-            'driver'   => 'sqlite',
+            'driver' => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
+            'prefix' => '',
         ]);
     }
 
@@ -44,6 +48,9 @@ class TestCase extends BaseTestCase
         $this->artisan('migrate', [
             '--path' => realpath(__DIR__ . '/../workbench/database/migrations/testMigrations'),
             '--realpath' => true,
+        ]);
+        Relation::morphMap([
+            'patient' => Patient::class,
         ]);
     }
 }

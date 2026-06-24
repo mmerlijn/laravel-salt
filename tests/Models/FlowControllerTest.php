@@ -1,7 +1,7 @@
 <?php
 
-use mmerlijn\LaravelSalt\Models\AppError;
 use mmerlijn\LaravelSalt\Models\Flow;
+use mmerlijn\LaravelSalt\Models\FlowError;
 use Workbench\App\Models\User;
 
 it('lists flows through the package route', function () {
@@ -23,12 +23,12 @@ it('shows and edits a flow through the package route', function () {
     $user = User::factory()->create();
     $this->actingAs($user);
 
-    $appError = AppError::factory()->create([
+    $flowError = FlowError::factory()->create([
         'notified' => [],
     ]);
 
     $flow = Flow::factory()->create([
-        'app_error_id' => $appError->id,
+        'flow_error_id' => $flowError->id,
     ]);
 
     $showResponse = $this->getJson(route('flows.show', $flow));
@@ -36,11 +36,11 @@ it('shows and edits a flow through the package route', function () {
 
     $showResponse->assertOk()
         ->assertJsonPath('data.id', $flow->id)
-        ->assertJsonPath('data.app_error_id', $appError->id);
+        ->assertJsonPath('data.flow_error_id', $flowError->id);
 
     $editResponse->assertOk()
         ->assertJsonPath('data.id', $flow->id)
-        ->assertJsonPath('data.app_error_id', $appError->id);
+        ->assertJsonPath('data.flow_error_id', $flowError->id);
 });
 
 it('resets try_after to now when updating a flow', function () {
@@ -73,7 +73,7 @@ it('deletes a flow through the package route', function () {
 
     $response->assertNoContent();
 
-    expect(Flow::query()->find($flow->id))->toBeNull();
+    expect(Flow::find($flow->id))->toBeNull();
 });
 
 

@@ -4,15 +4,15 @@ namespace Workbench\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use mmerlijn\LaravelSalt\Enums\ErrorLevelEnum;
-use mmerlijn\LaravelSalt\Models\AppError;
+use mmerlijn\LaravelSalt\Models\FlowError;
 
-class AppErrorFactory extends Factory
+class FlowErrorFactory extends Factory
 {
-    protected $model = AppError::class;
+    protected $model = FlowError::class;
 
     public function definition(): array
     {
-        $levels = array_map(static fn (ErrorLevelEnum $level) => $level->value, ErrorLevelEnum::cases());
+        $levels = array_map(static fn(ErrorLevelEnum $level) => $level->value, ErrorLevelEnum::cases());
 
         return [
             'level' => $this->faker->randomElement($levels),
@@ -20,11 +20,10 @@ class AppErrorFactory extends Factory
             'from_id' => null,
             'at_type' => null,
             'at_id' => null,
-            'class' => $this->faker->optional()->word(),
             'solution' => $this->faker->optional()->sentence(),
             'message' => $this->faker->sentence(),
             'trace' => $this->faker->optional()->text(400),
-            'exception_class' => $this->faker->optional()->randomElement([
+            'class' => $this->faker->optional()->randomElement([
                 null,
                 \RuntimeException::class,
                 \Exception::class,

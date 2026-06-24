@@ -3,11 +3,9 @@
 namespace mmerlijn\LaravelSalt\Observers;
 
 
-use mmerlijn\LaravelSalt\Models\AppError;
 use mmerlijn\LaravelSalt\Models\Flow;
-use mmerlijn\LaravelSalt\Models\FlowExchange;
 use mmerlijn\LaravelSalt\Models\FlowLog;
-use mmerlijn\LaravelSalt\Models\FlowResponse;
+
 
 class FlowObserver
 {
@@ -27,26 +25,15 @@ class FlowObserver
             'payload_id' => $flow->payload_id,
             'payload_type' => $flow->payload_type,
             'attempts' => $flow->attempts,
+            'data' => $flow->data,
         ]);
-        if (!$flow->payload_id) {
-            return;
-        }
-        if ($flow->payload instanceof AppError) {
-            $flow->payload->delete();
-            return;
-        }
     }
 
     public function deleted(Flow $flow): void
     {
         //more actions needed
         $flow->error?->delete();
+        $flow->errors()->delete();
     }
-
-    public function deleting(FlowExchange $flowExchange): void
-    {
-
-    }
-
 
 }

@@ -1,15 +1,15 @@
 <?php
 
 use mmerlijn\LaravelSalt\Enums\ErrorLevelEnum;
-use mmerlijn\LaravelSalt\Models\AppError;
+use mmerlijn\LaravelSalt\Models\FlowError;
 use Workbench\App\Models\User;
 
 it('denies guests from updating an app error', function () {
 
-    $appError = AppError::factory()->create();
+    $flowError = FlowError::factory()->create();
 
     // We loggen hier NIET in en doen direct de request
-    $response = $this->patchJson(route('app-errors.update', $appError->id), [
+    $response = $this->patchJson(route('flow-errors.update', $flowError->id), [
         'solution' => 'new solution',
     ]);
 
@@ -23,14 +23,14 @@ it('denies guests from updating an app error', function () {
 it('lists app errors through the package route', function () {
     $user = User::factory()->create();
     $this->actingAs($user);
-    AppError::factory()->create([
+    FlowError::factory()->create([
         'level' => ErrorLevelEnum::MENNO,
         'notify' => false,
         'class' => 'TestClass',
         'notified' => [],
     ]);
 
-    $response = $this->getJson(route('app-errors.index'));
+    $response = $this->getJson(route('flow-errors.index'));
 
     $response->assertOk()
         ->assertJsonStructure([
@@ -46,33 +46,33 @@ it('lists app errors through the package route', function () {
 it('shows an app error through the package route', function () {
     $user = User::factory()->create();
     $this->actingAs($user);
-    $appError = AppError::factory()->create([
+    $flowError = FlowError::factory()->create([
         'level' => ErrorLevelEnum::MENNO,
         'notify' => false,
         'class' => 'TestClass',
         'notified' => [],
     ]);
-    $response = $this->getJson(route('app-errors.show', $appError->id));
+    $response = $this->getJson(route('flow-errors.show', $flowError->id));
 
     $response->assertOk()
-        ->assertJsonPath('data.id', $appError->id)
+        ->assertJsonPath('data.id', $flowError->id)
         ->assertJsonPath('data.level', ErrorLevelEnum::MENNO->value)
         ->assertJsonPath('data.class', 'TestClass')
         ->assertJsonPath('data.notify', false);
-    expect($appError->level)->toBe(ErrorLevelEnum::MENNO)
-        ->and($appError->class)->toBe('TestClass');
+    expect($flowError->level)->toBe(ErrorLevelEnum::MENNO)
+        ->and($flowError->class)->toBe('TestClass');
 });
 
 it('updates an app error through the package route', function () {
     $user = User::factory()->create();
     $this->actingAs($user);
-    $appError = AppError::factory()->create([
+    $flowError = FlowError::factory()->create([
         'solution' => 'old',
         'notify' => false,
         'notified' => [],
     ]);
 
-    $response = $this->patchJson(route('app-errors.update', $appError->id), [
+    $response = $this->patchJson(route('flow-errors.update', $flowError->id), [
         'solution' => 'new solution',
         'notify' => true,
         'notified' => [],
@@ -81,25 +81,25 @@ it('updates an app error through the package route', function () {
         ->assertJsonPath('data.solution', 'new solution')
         ->assertJsonPath('data.notify', true);
 
-    expect($appError->refresh()->solution)->toBe('new solution')
-        ->and($appError->fresh()->notify)->toBeTrue();
+    expect($flowError->refresh()->solution)->toBe('new solution')
+        ->and($flowError->fresh()->notify)->toBeTrue();
 });
 
 it('deletes an app error through the package route', function () {
     $user = User::factory()->create();
     $this->actingAs($user);
-    $appError = AppError::factory()->create([
+    $flowError = FlowError::factory()->create([
         'notified' => [],
     ]);
 
-    $response = $this->deleteJson(route('app-errors.destroy', $appError));
+    $response = $this->deleteJson(route('flow-errors.destroy', $flowError));
 
     $response->assertNoContent();
 
-    $this->assertDatabaseHas('app_errors', [
-        'id' => $appError->id,
+    $this->assertDatabaseHas('flow_errors', [
+        'id' => $flowError->id,
     ]);
-    expect(AppError::withTrashed()->find($appError->id)?->deleted_at)->not->toBeNull();
+    expect(FlowError::withTrashed()->find($flowError->id)?->deleted_at)->not->toBeNull();
 });
 
 

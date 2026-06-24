@@ -160,22 +160,21 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        Schema::create('app_errors', function (Blueprint $table) {
+        Schema::create('flow_errors', function (Blueprint $table) {
             $table->id();
+            $table->unsignedInteger('flow_id')->nullable();
             $table->unsignedTinyInteger('level')->default(1);
             $table->string('from_type')->nullable();
             $table->unsignedBigInteger('from_id')->nullable();
             $table->string('at_type')->nullable();
             $table->unsignedBigInteger('at_id')->nullable();
-            $table->string('class')->nullable();
-            //$table->string('app')->nullable();
+            $table->string('class')->nullable()->comment('class where the error occurred');
             $table->text('solution')->nullable();
             $table->text('message')->nullable();
             $table->mediumText('trace')->nullable();
-            $table->string('exception_class')->nullable();
             $table->boolean('notify')->default(0);
-            $table->json('notified'); //emails to
-            $table->index(['deleted_at', 'level', 'class'], 'app_error_ind');
+            $table->json('notified')->default('[]'); //emails send to
+            $table->index(['deleted_at', 'flow_id'], 'flow_error_ind');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -184,48 +183,40 @@ return new class extends Migration {
             $table->id();
             $table->unsignedSmallInteger('type');
             $table->boolean('active')->default(0);
-            $table->string('payload_type', 50)->nullable();
+            $table->string('payload_type', 100)->nullable();
             $table->unsignedBigInteger('payload_id')->nullable();
             $table->json('stack');
             $table->unsignedSmallInteger('attempts')->default(0);
             $table->timestamp('try_after')->default(now());
-            $table->unsignedBigInteger('app_error_id')->nullable();
-            $table->mediumText('request');
+            $table->unsignedBigInteger('flow_error_id')->nullable();
+            $table->unsignedSmallInteger('request_type')->default(0);
+            $table->unsignedSmallInteger('response_type')->default(0);
+            $table->mediumText('request')->nullable();
             $table->mediumText('response')->nullable();
             $table->unsignedBigInteger('patient_id')->nullable();
             $table->unsignedBigInteger('labtrain_id')->nullable();
             $table->string('request_nr')->nullable();
-            $table->timestamp('request_at')->default(now());
+            $table->timestamp('request_at')->nullable()->default(now());
             $table->timestamp('response_at')->nullable();
             $table->json('data')->nullable();
-            $table->index(['try_after', 'app_error_id'], "msg_batch_ready_index");
+            $table->index(['try_after', 'flow_error_id'], "flow_ready_index");
             $table->timestamps();
         });
-//        Schema::create('flow_exchanges', function (Blueprint $table) {
-//            $table->id();
-//
-//            $table->unsignedSmallInteger('type')->default(0);
-//            $table->unsignedSmallInteger('port')->nullable();
-//            $table->mediumText('request');
-//            $table->mediumText('response')->nullable();
-//            $table->unsignedBigInteger('patient_id')->nullable();
-//            $table->unsignedBigInteger('labtrain_id')->nullable();
-//            $table->string('request_nr')->nullable();
-//            $table->timestamp('request_at')->default(now());
-//            $table->timestamp('response_at')->nullable();
-//            $table->timestamps();
-//        });
 
-        Schema::create('flow__logs', function (Blueprint $table) {
+        Schema::create('flow_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedSmallInteger('type')->default(0);
-            $table->mediumText('request');
+            $table->unsignedSmallInteger('attempts')->default(0);
+            $table->mediumText('request')->nullable();
             $table->mediumText('response')->nullable();
-            $table->timestamp('request_at')->default(now());
+            $table->timestamp('request_at')->nullable();
             $table->timestamp('response_at')->nullable();
+            $table->string('payload_type', 100)->nullable();
+            $table->unsignedBigInteger('payload_id')->nullable();
             $table->unsignedBigInteger('patient_id')->nullable();
+            $table->unsignedBigInteger('labtrain_id')->nullable();
             $table->string('request_nr')->nullable();
-            $table->json('flow')->nullable();
+            $table->json('data')->nullable();
             $table->timestamps();
         });
     }

@@ -43,6 +43,7 @@ class GetLabtrainPatientNrJob implements ShouldQueue
         return 'flow-250-' . $this->flow->id;
     }
 
+    //TODO helemaal aanpassen
     public function handle(): void
     {
         if (!$this->flow->payload->patient_id) {
