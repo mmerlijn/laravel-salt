@@ -272,8 +272,6 @@ class Flow extends Model
 
         if ($runNext) {
             $this->prepend(task: $runNext, wait: $wait);
-        } else {
-            $this->reset(wait: $wait);
         }
 
         if ($skipTask) {
@@ -310,7 +308,9 @@ class Flow extends Model
 
     public function prepend(int|array|BackedEnum $task, int $wait = 0): void
     {
-        $this->reset(wait: $wait);
+        $this->flow_error_id = null;
+        $this->attempts = 0;
+        $this->nextAttemptAt(wait: $wait);
         $stack = $this->stack;
         array_unshift($stack, $task->value ?? $task);
         $this->stack = $stack;
