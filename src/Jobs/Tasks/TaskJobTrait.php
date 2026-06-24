@@ -12,8 +12,6 @@ trait TaskJobTrait
 
     public int $maxExceptions = 0;
 
-    public int $uniqueFor = 60;
-
     public function uniqueVia(): Repository
     {
         return Cache::driver('database');

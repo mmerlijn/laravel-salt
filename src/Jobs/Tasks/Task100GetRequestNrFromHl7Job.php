@@ -2,21 +2,13 @@
 
 namespace mmerlijn\LaravelSalt\Jobs\Tasks;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Validator;
 use mmerlijn\LaravelSalt\Actions\Tasks\GetRequestNrFromHl7;
 use mmerlijn\LaravelSalt\Enums\ErrorLevelEnum;
-use mmerlijn\LaravelSalt\Helpers\Error;
 use mmerlijn\LaravelSalt\Rules\RequestNr;
 
-class Task100GetRequestNrFromHl7Job implements ShouldQueue
+class Task100GetRequestNrFromHl7Job extends TaskJob
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TaskJobTrait;
-
 //Todo helemaal aanpassen
     public function handle(): void
     {

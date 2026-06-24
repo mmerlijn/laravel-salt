@@ -2,17 +2,11 @@
 
 namespace Workbench\App\Jobs;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use mmerlijn\LaravelSalt\Helpers\Error;
-use mmerlijn\LaravelSalt\Jobs\Tasks\TaskJobTrait;
+use mmerlijn\LaravelSalt\Jobs\Tasks\TaskJob;
 
-class FlowExamplePatientBsnJob implements ShouldQueue
+
+class FlowExamplePatientBsnJob extends TaskJob
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TaskJobTrait;
 
     public function handle(): void
     {

@@ -2,22 +2,16 @@
 
 namespace mmerlijn\LaravelSalt\Jobs\Tasks;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+
 use mmerlijn\LaravelSalt\Actions\Tasks\SendResponses\ResponseToHttp;
 use mmerlijn\LaravelSalt\Actions\Tasks\SendResponses\ResponseToMirth;
 use mmerlijn\LaravelSalt\Actions\Tasks\SendResponses\ResponseToMirthHttp;
 use mmerlijn\LaravelSalt\Enums\ErrorLevelEnum;
 use mmerlijn\LaravelSalt\Enums\SendTypeEnum;
-use mmerlijn\LaravelSalt\Helpers\Error;
-use mmerlijn\LaravelSalt\Models\FlowExchange;
 
-class Task101GetLabtrainPatientNrFromJsonJob implements ShouldQueue
+
+class Task101GetLabtrainPatientNrFromJsonJob extends TaskJob
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TaskJobTrait;
 
 //Todo helemaal aanpassen
     public function handle(): void

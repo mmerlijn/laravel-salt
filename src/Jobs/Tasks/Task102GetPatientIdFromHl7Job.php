@@ -2,19 +2,12 @@
 
 namespace mmerlijn\LaravelSalt\Jobs\Tasks;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use mmerlijn\LaravelSalt\Actions\FindOrCreatePatient;
 use mmerlijn\LaravelSalt\Enums\ErrorLevelEnum;
-use mmerlijn\LaravelSalt\Helpers\Error;
 use mmerlijn\msgHl7\Hl7;
 
-class Task102GetPatientIdFromHl7Job implements ShouldQueue
+class Task102GetPatientIdFromHl7Job extends TaskJob
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TaskJobTrait;
 
 //Todo helemaal aanpassen
     public function handle(): void

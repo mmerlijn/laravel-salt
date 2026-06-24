@@ -320,7 +320,7 @@ class Flow extends Model
 
     private function nextAttemptAt($wait = 0): void
     {
-        if ($wait) {
+        if ($wait !== 0) {
             $this->try_after = now()->addMinutes($wait);
             return;
         }

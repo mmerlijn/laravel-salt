@@ -3,18 +3,24 @@
 namespace mmerlijn\LaravelSalt\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBeUnique;
 use Illuminate\Contracts\Cache\Repository;
-use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\UniqueFor;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use mmerlijn\LaravelSalt\Models\Lock;
 
-class PruneLocks implements ShouldQueue, ShouldBeUniqueUntilProcessing
+#[UniqueFor(10)]
+class PruneLocks implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public int $tries = 1;
+
+    public int $maxExceptions = 0;
 
     public function uniqueId(): string
     {
