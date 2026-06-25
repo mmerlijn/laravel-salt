@@ -39,6 +39,7 @@ class FlowRunnerJob implements ShouldQueue, ShouldBeUnique
     {
         Flow::runAll();
 
+        //TODO testen of dit echt werkt
         // 2. Veilige dispatch naar de toekomst:
         // We proberen een lock te claimen die uniek is voor deze taakloop.
         // Dit lock verloopt automatisch na 20 seconden (iets langer dan je delay van 15).

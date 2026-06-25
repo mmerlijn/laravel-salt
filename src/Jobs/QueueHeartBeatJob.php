@@ -13,12 +13,12 @@ class QueueHeartBeatJob implements ShouldQueue
 
     public function __construct()
     {
-        $this->onQueue('high');
+        //$this->onQueue('high');
     }
 
     public function handle(): void
     {
-        logger('cache gezet');
+
         // Sla de huidige tijd op in de cache
         cache()->put('queue_last_heartbeat', now(), now()->addMinutes(5));
     }
