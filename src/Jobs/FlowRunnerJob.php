@@ -39,7 +39,11 @@ class FlowRunnerJob implements ShouldQueue, ShouldBeUnique
     {
         Flow::runAll();
 
-        if (Cache::lock('flow-runner', 45)->get()) {
+        // 2. Veilige dispatch naar de toekomst:
+        // We proberen een lock te claimen die uniek is voor deze taakloop.
+        // Dit lock verloopt automatisch na 20 seconden (iets langer dan je delay van 15).
+        if (Cache::lock('lock:flowRunner-job-infinite-loop', 20)->get()) {
+            // Alleen als we het lock HEBBEN gekregen, plannen we de volgende job in.
             self::dispatch()->delay(now()->addSeconds(15));
         }
 
