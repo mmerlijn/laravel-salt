@@ -39,6 +39,9 @@ class FlowRunnerJob implements ShouldQueue, ShouldBeUnique
     {
         Flow::runAll();
 
-        self::dispatch()->delay(now()->addSeconds(15));
+        if (Cache::lock('flow-runner', 45)->get()) {
+            self::dispatch()->delay(now()->addSeconds(15));
+        }
+
     }
 }
