@@ -93,7 +93,7 @@ class Flow extends Model
 
     public function payload(): MorphTo
     {
-        return $this->morphTo();
+        return $this->morphTo()->withTrashed();
     }
 
     public static function add(int|BackedEnum $flow, null|array|Model $payload, $wait = 0, array $data = []): self

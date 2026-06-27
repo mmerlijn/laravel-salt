@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use mmerlijn\LaravelSalt\Http\Controllers\FlowController;
 use mmerlijn\LaravelSalt\Http\Controllers\FlowErrorController;
+use mmerlijn\LaravelSalt\Http\Controllers\ServerStatusController;
 use mmerlijn\LaravelSalt\Models\Flow;
 use mmerlijn\LaravelSalt\Models\FlowError;
 
@@ -13,7 +14,6 @@ Route::bind('flowError', function ($value) {
 Route::bind('flow', function ($value) {
     return Flow::query()->findOrFail($value);
 });
-
 
 Route::prefix('api')
     ->middleware(['api', 'auth'])
@@ -26,7 +26,7 @@ Route::prefix('api')
             ->only(['index', 'show', 'edit', 'update', 'destroy'])
             ->parameters(['flows' => 'flow']);
     });
-
+Route::get('server-status', ServerStatusController::class)->middleware(['web'])->name('server-status');
 /*
  *
 
