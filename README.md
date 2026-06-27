@@ -27,7 +27,16 @@ Published files will be placed in:
 ```php
 (PruneLocks)->everyMinute();
 (FlowRunnerJob)->everyMinute();
+(QueueHeartBeatJob)->everyMinute();
 
+```
+
+## Server online check
+
+Via de volgende URL is de server status te controleren:
+
+```
+https://<server>/server-status/check-me
 ```
 
 ## Flows

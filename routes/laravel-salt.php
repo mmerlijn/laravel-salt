@@ -15,6 +15,8 @@ Route::bind('flow', function ($value) {
     return Flow::query()->findOrFail($value);
 });
 
+Route::get('server-status/check-me', ServerStatusController::class)->middleware(['web'])->name('server-status');
+
 Route::prefix('api')
     ->middleware(['api', 'auth'])
     ->group(function () {
@@ -26,7 +28,7 @@ Route::prefix('api')
             ->only(['index', 'show', 'edit', 'update', 'destroy'])
             ->parameters(['flows' => 'flow']);
     });
-Route::get('server-status', ServerStatusController::class)->middleware(['web'])->name('server-status');
+
 /*
  *
 
