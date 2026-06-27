@@ -4,6 +4,7 @@ namespace mmerlijn\LaravelSalt\Http\Resources\Requester;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use mmerlijn\LaravelSalt\Models\Requester;
+use mmerlijn\msgRepo\Enums\VektisType;
 
 /** @mixin Requester */
 class RequesterResource extends JsonResource
@@ -19,7 +20,10 @@ class RequesterResource extends JsonResource
             'email' => $this->email ? $this->email : '',
             'fax' => $this->fax ? $this->fax : '',
             'ended_at' => $this->deleted_at ? $this->deleted_at->toDateTimeString() : '',
-
+            'members' => $this->when($this->type != VektisType::ZORGVERLENER,
+                $this->members->toResource(), null),
+            'organizations' => $this->when($this->type == VektisType::ZORGVERLENER,
+                $this->organizations->toResource(), null),
             //TODO add relations
         ];
     }
