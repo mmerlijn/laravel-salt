@@ -5,10 +5,11 @@ namespace mmerlijn\LaravelSalt\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
 use mmerlijn\LaravelSalt\Http\Resources\FlowResource;
 use mmerlijn\LaravelSalt\Models\Flow;
 
-class FlowController
+class FlowController extends Controller
 {
     public function index(Request $request)
     {

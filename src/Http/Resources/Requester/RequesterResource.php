@@ -20,6 +20,7 @@ class RequesterResource extends JsonResource
             'email' => $this->email ? $this->email : '',
             'fax' => $this->fax ? $this->fax : '',
             'ended_at' => $this->deleted_at ? $this->deleted_at->toDateTimeString() : '',
+            'address' => $this->address,
             'members' => $this->when($this->type != VektisType::ZORGVERLENER,
                 $this->members?->toResourceCollection(RequesterNestedResource::class), null),
             'organizations' => $this->when($this->type == VektisType::ZORGVERLENER,

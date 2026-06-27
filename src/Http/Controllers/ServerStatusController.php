@@ -2,9 +2,10 @@
 
 namespace mmerlijn\LaravelSalt\Http\Controllers;
 
+use Illuminate\Routing\Controller;
 use mmerlijn\LaravelSalt\Helpers\QueueHeartBeat;
 
-class ServerStatusController
+class ServerStatusController extends Controller
 {
 
     public function __invoke()
