@@ -62,56 +62,35 @@ class Requester extends Model
 
     }
 
-//    public static function add(Requester|\mmerlijn\msgRepo\Organization|Contact $requester, VektisType $type = VektisType::ZORGVERLENER): ?Requester
-//    {
-//        if (!$requester->agbcode) {
-//            return null;
-//        }
-//        if($r = self::getRequesterByAgbcode($requester->agbcode)){
-//            return $r;
-//        }
-//        logger($requester->agbcode);
-//        logger(Requester::withTrashed()->find($requester->agbcode));
-//        $r_new = new self;
-//        $r_new->agbcode = $requester->agbcode;
-//        if ($requester instanceof Contact) {
-//            $r_new->name = $requester->name->getNameReverse();
-//
-//        }elseif($requester instanceof \mmerlijn\msgRepo\Organization) {
-//            $r_new->name = $requester->name;
-//            $r_new->address = $requester->address;
-//
-//        }
-//        $r_new->phone = $requester->phone;
-//        $r_new->fax = $requester->fax;
-//        $r_new->save();
-//
-//        if(config('laravel_salt.vektis',false)){
-//            GetCaregiverJob::dispatch($requester->agbcode,VektisType::ZORGVERLENER);
-//        }
-//        return $r_new;
-//    }
-
-    public function related(): BelongsToMany
+    // De kant waarbij dit model de zorgverlener/aanvrager is
+    public function organizations(): BelongsToMany
     {
+        return $this->belongsToMany(
+            Requester::class,
+            'organization_has_requester',
+            'requester_agbcode',
+            'organization_agbcode'
+        )->withTimestamps();
+    }
+
+    // De kant waarbij dit model de organisatie is
+    public function members(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Requester::class,
+            'organization_has_requester',
+            'organization_agbcode',
+            'requester_agbcode'
+        )->withTimestamps();
+    }
+
+    public function getRelatedAttribute(): BelongsToMany
+    {
+
         if ($this->type == VektisType::ZORGVERLENER) {
-            return $this->belongsToMany(
-                Requester::class,
-                'organization_has_requester',
-                'requester_agbcode',
-                'organization_agbcode',
-                'agbcode',
-                'agbcode'
-            )->withTimestamps();
+            return $this->organizations;
         } else {
-            return $this->belongsToMany(
-                Requester::class,
-                'organization_has_requester',
-                'organization_agbcode',
-                'requester_agbcode',
-                'agbcode',
-                'agbcode'
-            )->withTimestamps();
+            return $this->members;
         }
     }
 

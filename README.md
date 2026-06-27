@@ -39,6 +39,12 @@ Via de volgende URL is de server status te controleren:
 https://<server>/server-status/check-me
 ```
 
+#### Responses:
+
+Queue probleem
+Database Probleem
+ok
+
 ## Flows
 
 ### Starten van een flow
