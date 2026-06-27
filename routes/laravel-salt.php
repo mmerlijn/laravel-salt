@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use mmerlijn\LaravelSalt\Http\Controllers\EnumApiController;
 use mmerlijn\LaravelSalt\Http\Controllers\FlowController;
 use mmerlijn\LaravelSalt\Http\Controllers\FlowErrorController;
+use mmerlijn\LaravelSalt\Http\Controllers\LockController;
 use mmerlijn\LaravelSalt\Http\Controllers\NoteApiController;
 use mmerlijn\LaravelSalt\Http\Controllers\PatientApiController;
 use mmerlijn\LaravelSalt\Http\Controllers\RequesterApiController;
@@ -42,6 +43,7 @@ Route::prefix('api')
             ->only(['index'])
             ->parameters(['patients' => 'patient']);
         Route::resource('notes', NoteApiController::class);
+        Route::resource('locks', LockController::class)->only(['update', 'show']);
         Route::get('enum/{enum}', EnumApiController::class)->name('enum');
     });
 /*
