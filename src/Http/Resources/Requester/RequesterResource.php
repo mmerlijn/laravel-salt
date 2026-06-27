@@ -21,10 +21,13 @@ class RequesterResource extends JsonResource
             'fax' => $this->fax ? $this->fax : '',
             'ended_at' => $this->deleted_at ? $this->deleted_at->toDateTimeString() : '',
             'members' => $this->when($this->type != VektisType::ZORGVERLENER,
-                $this->members->toResource(), null),
+                $this->members?->toResourceCollection(), null),
             'organizations' => $this->when($this->type == VektisType::ZORGVERLENER,
-                $this->organizations->toResource(), null),
+                $this->organizations?->toResourceCollection(), null),
+
             //TODO add relations
         ];
     }
+
+
 }

@@ -34,6 +34,8 @@ use Workbench\Database\Factories\RequesterFactory;
  * @property Phone $phone
  * @property array $owners
  * @property array $qualifications
+ * @property Requester{} $organizations
+ * @property Requester{} $members
  */
 #[ObservedBy(RequesterObserver::class), UseResource(RequesterResource::class)]
 class Requester extends Model
