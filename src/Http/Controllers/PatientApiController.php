@@ -10,13 +10,14 @@ class PatientApiController extends Controller
 {
     public function index(Request $request)
     {
-        $p = Patient::query();
+        $p = Patient::filtered($request->toArray());
         if ($request->bsn) {
-            $p = $p->useIndex('patient_index');
+            $p = $p->useIndex('patient_index')
+                ->limit(1);
         } else {
-            $p = $p->useIndex('patient_search_index');
+            $p = $p->useIndex('patient_search_index')
+                ->simplePaginate(10)->withQueryString();
         }
-        return response()->json($p->filtered($request->toArray())
-            ->simplePaginate(10)->withQueryString()->toResourceCollection());
+        return response()->json($p->toResourceCollection());
     }
 }
