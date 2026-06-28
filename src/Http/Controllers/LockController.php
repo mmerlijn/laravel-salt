@@ -9,24 +9,19 @@ use mmerlijn\LaravelSalt\Models\Lock;
 
 class LockController extends Controller
 {
-    public function update(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'type' => 'required',
             'id' => 'required',
         ]);
-
-        if (!$lock = Lock::find($request->id)) {
-            $lock = Lock::updateOrCreate([
-                'locked_type' => $request->type,
-                'locked_id' => $request->id,
-            ], [
-                'lock_end' => now()->addSeconds(90),
-                'user_id' => auth()->user()?->id ?: 500,
-            ]);
-        } else {
-            $lock->extend();
-        }
+        $lock = Lock::updateOrCreate([
+            'locked_type' => $request->type,
+            'locked_id' => $request->id,
+        ], [
+            'lock_end' => now()->addSeconds(90),
+            'user_id' => auth()->user()?->id ?: 500,
+        ]);
         return response()->json($lock->user_id ? $lock->user->toResource() : null);
     }
 

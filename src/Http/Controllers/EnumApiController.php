@@ -14,6 +14,12 @@ class EnumApiController extends Controller
     {
         try {
             $enum = "App\\Enums\\" . $enum;
+            if (!class_exists($enum)) {
+                $enum = "\\mmerlijn\\LaravelSalt\\Enums\\" . $enum;
+                if (!class_exists($enum)) {
+                    throw new \Exception("Enum {$enum} not found");
+                }
+            }
             return $enum::collection();
         } catch (\Throwable $th) {
             return [];
