@@ -13,7 +13,7 @@ class PatientApiController extends Controller
         $p = Patient::filtered($request->toArray());
         if ($request->bsn) {
             $p = $p->useIndex('patient_index')
-                ->limit(1);
+                ->limit(1)->get();
         } else {
             $p = $p->useIndex('patient_search_index')
                 ->simplePaginate(10)->withQueryString();
