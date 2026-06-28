@@ -43,8 +43,9 @@ Route::prefix('api')
             ->only(['index'])
             ->parameters(['patients' => 'patient']);
         Route::resource('notes', NoteApiController::class);
-        Route::resource('locks', LockController::class)->only(['store', 'show']);
         Route::get('enum/{enum}', EnumApiController::class)->name('enum');
+        Route::get('locked/{type}/{id}', LockController::class)->name('locked');
+        Route::put('lock/{type}/{id}', LockController::class)->name('lock');
     });
 /*
  *
