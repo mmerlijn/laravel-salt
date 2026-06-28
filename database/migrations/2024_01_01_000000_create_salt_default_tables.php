@@ -56,7 +56,7 @@ return new class extends Migration {
             $table->unsignedSmallInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->index(['deleted_at', 'bsn', 'dob'], 'patient_inded');
+            $table->index(['deleted_at', 'bsn', 'dob'], 'patient_index');
             $table->index(['deleted_at', 'last_requester'], 'patient_requester_ind');
             $table->index(['deleted_at', 'sex', 'dob', 'lastname', 'own_lastname', 'postcode'], 'patient_search_index');
         });
