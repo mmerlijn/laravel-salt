@@ -3,13 +3,20 @@
 namespace mmerlijn\LaravelSalt\Observers;
 
 
+use Illuminate\Support\Carbon;
 use mmerlijn\LaravelSalt\Models\Flow;
 use mmerlijn\LaravelSalt\Models\FlowLog;
 
 
 class FlowObserver
 {
-
+    public function updating(Flow $flow): void
+    {
+        if ($flow->isDirty('app_error_id') && !$flow->app_error_id) {
+            $flow->attempts = 0;
+            $flow->try_after = Carbon::now()->subSecond();
+        }
+    }
 
     public function deleting(Flow $flow): void
     {
