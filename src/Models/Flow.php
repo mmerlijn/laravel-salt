@@ -313,7 +313,11 @@ class Flow extends Model
         $this->attempts = 0;
         $this->nextAttemptAt(wait: $wait);
         $stack = $this->stack;
-        array_unshift($stack, $task->value ?? $task);
+        if (is_array($task)) {
+            array_splice($stack, 0, 0, $task);
+        } else {
+            array_unshift($stack, $task->value ?? $task);
+        }
         $this->stack = $stack;
     }
 
