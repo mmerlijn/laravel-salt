@@ -2078,16 +2078,16 @@
         },
         {
             "name": "mmerlijn/msg-hl7",
-            "version": "v3.9.10",
+            "version": "v3.9.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mmerlijn/msg-hl7.git",
-                "reference": "ce37e33c4c10f3d9b2043cb2dfc5ff6593b11da5"
+                "reference": "06732f3827eebc6b8ee85e73dfe0cb6f12645f0d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mmerlijn/msg-hl7/zipball/ce37e33c4c10f3d9b2043cb2dfc5ff6593b11da5",
-                "reference": "ce37e33c4c10f3d9b2043cb2dfc5ff6593b11da5",
+                "url": "https://api.github.com/repos/mmerlijn/msg-hl7/zipball/06732f3827eebc6b8ee85e73dfe0cb6f12645f0d",
+                "reference": "06732f3827eebc6b8ee85e73dfe0cb6f12645f0d",
                 "shasum": ""
             },
             "require": {
@@ -2124,9 +2124,9 @@
             "description": "Dutch healthcare read/write hl7 to/from repository",
             "support": {
                 "issues": "https://github.com/mmerlijn/msg-hl7/issues",
-                "source": "https://github.com/mmerlijn/msg-hl7/tree/v3.9.10"
+                "source": "https://github.com/mmerlijn/msg-hl7/tree/v3.9.11"
             },
-            "time": "2026-06-19T15:04:13+00:00"
+            "time": "2026-07-06T07:17:05+00:00"
         },
         {
             "name": "mmerlijn/msg-repo",
