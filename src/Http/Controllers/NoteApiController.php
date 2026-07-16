@@ -65,9 +65,10 @@ class NoteApiController extends Controller
 
     public function destroy(Note $note)
     {
-        $subject = $note->subject;
+        //$subject = $note->subject;
         $note->delete();
-        return response()->json($subject->notes?->toResourceCollection());
+        //return response()->json($subject->notes?->toResourceCollection());
+        return response()->json(null, 204);
     }
 
     private function fieldsFilter(array $data)
