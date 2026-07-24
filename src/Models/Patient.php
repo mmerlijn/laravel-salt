@@ -132,7 +132,7 @@ class Patient extends Model
                 "De 'laravel-salt.classes.followup' configuratie is niet ingesteld, maar de followup relatie wordt wel aangeroepen."
             );
         }
-        return $this->hasMany($class::class);;
+        return $this->hasMany($class::class);
 
     }
 
@@ -169,7 +169,7 @@ class Patient extends Model
 
     public function organization(): BelongsTo
     {
-        return $this->belongsTo(Requester::class, 'last_requester', 'agbcode')->withTrashed()->withDefault([
+        return $this->belongsTo(Requester::class, 'last_organization', 'agbcode')->withTrashed()->withDefault([
             'name' => 'Niet bekend',
             'agbcode' => '00000000',
         ]);
@@ -246,6 +246,9 @@ class Patient extends Model
         if ($filter['patient_id'] ?? false) {
             $query = $query->whereId($filter['patient_id']);
         }
+        if ($filter['labtrain_id'] ?? false) {
+            $query = $query->whereLabtrainId($filter['labtrain_id']);
+        }
         if ($filter['sex'] ?? false) {
             $query = $query->whereSex($filter['sex']);
         }
@@ -303,7 +306,8 @@ class Patient extends Model
                 $p = new PatientRepo(
                     name: $this->name,
                     address: $this->address,
-                    last_requester: $attributes['last_requester'] ?? ''
+                    last_requester: $attributes['last_requester'] ?? '',
+                    last_organization: $attributes['last_organization'] ?? ''
                 )->setDob($attributes['dob'])
                     ->setBsn($attributes['bsn'] ?? "")
                     ->setSex($attributes['sex'])
@@ -333,6 +337,7 @@ class Patient extends Model
                 'uzovi' => $patient->insurance->uzovi,
                 'policy_nr' => $patient->insurance->policy_nr,
                 'last_requester' => $patient->last_requester,
+                'last_organization' => $patient->last_organization,
             ],
         );
     }

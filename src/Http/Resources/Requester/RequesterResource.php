@@ -21,6 +21,7 @@ class RequesterResource extends JsonResource
             'fax' => $this->fax ? $this->fax : '',
             'ended_at' => $this->deleted_at ? $this->deleted_at->toDateTimeString() : '',
             'address' => $this->address,
+            'gp' => $this->is_gp?->value,
             'members' => $this->when($this->type != VektisType::ZORGVERLENER,
                 $this->members?->toResourceCollection(RequesterNestedResource::class), null),
             'organizations' => $this->when($this->type == VektisType::ZORGVERLENER,

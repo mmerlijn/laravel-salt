@@ -19,6 +19,7 @@ class RequesterNestedResource extends JsonResource
             'email' => $this->email ? $this->email : '',
             'fax' => $this->fax ? $this->fax : '',
             'address' => $this->address,
+            'gp' => $this->is_gp?->value,
             'ended_at' => $this->deleted_at ? $this->deleted_at->toDateTimeString() : '',
             //TODO add relations
         ];
