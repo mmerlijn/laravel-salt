@@ -109,11 +109,11 @@ class Requester extends Model
 
     public function followups(): HasMany
     {
-        $class = config('laravel-salt.classes.followup');
+        $class = config('laravel_salt.classes.followup');
 
         if (!$class) {
             throw new \RuntimeException(
-                "De 'laravel-salt.classes.followup' configuratie is niet ingesteld, maar de followup relatie wordt wel aangeroepen."
+                "De 'laravel_salt.classes.followup' configuratie is niet ingesteld, maar de followup relatie wordt wel aangeroepen."
             );
         }
         return $this->hasMany($class::class);

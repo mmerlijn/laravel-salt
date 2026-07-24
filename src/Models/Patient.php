@@ -125,11 +125,11 @@ class Patient extends Model
 
     public function followups(): HasMany
     {
-        $class = config('laravel-salt.classes.followup');
+        $class = config('laravel_salt.classes.followup');
 
         if (!$class) {
             throw new \RuntimeException(
-                "De 'laravel-salt.classes.followup' configuratie is niet ingesteld, maar de followup relatie wordt wel aangeroepen."
+                "De 'laravel_salt.classes.followup' configuratie is niet ingesteld, maar de followup relatie wordt wel aangeroepen."
             );
         }
         return $this->hasMany($class::class);
@@ -138,10 +138,10 @@ class Patient extends Model
 
     public function appointments(): MorphMany
     {
-        $class = config('laravel-salt.classes.appointment');
+        $class = config('laravel_salt.classes.appointment');
         if (!$class) {
             throw new \RuntimeException(
-                "De 'laravel-salt.classes.appointment' configuratie is niet ingesteld, maar de appointments relatie wordt wel aangeroepen."
+                "De 'laravel_salt.classes.appointment' configuratie is niet ingesteld, maar de appointments relatie wordt wel aangeroepen."
             );
         }
         return $this->morphMany($class, 'owner');
@@ -149,10 +149,10 @@ class Patient extends Model
 
     public function tests(): HasMany
     {
-        $class = config('laravel-salt.classes.test');
+        $class = config('laravel_salt.classes.test');
         if (!$class) {
             throw new \RuntimeException(
-                "De 'laravel-salt.classes.test' configuratie is niet ingesteld, maar de tests relatie wordt wel aangeroepen."
+                "De 'laravel_salt.classes.test' configuratie is niet ingesteld, maar de tests relatie wordt wel aangeroepen."
             );
         }
         return $this->hasMany($class::class);
@@ -186,9 +186,9 @@ class Patient extends Model
 
     public function requests(): HasMany
     {
-        $class = config('laravel-salt.classes.request');
+        $class = config('laravel_salt.classes.request');
         if (!$class) {
-            throw new \RuntimeException("De 'laravel-salt.classes.request' configuratie is niet ingesteld, maar de request relatie wordt wel aangeroepen.");
+            throw new \RuntimeException("De 'laravel_salt.classes.request' configuratie is niet ingesteld, maar de request relatie wordt wel aangeroepen.");
         }
         return $this->hasMany($class::class);
     }

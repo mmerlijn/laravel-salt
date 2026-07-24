@@ -44,7 +44,7 @@ it('Flows run with inserted requests', function () {
 });
 
 it('stores an app error when task 2 fails', function () {
-    config()->set('laravel-salt.notify.1', []);
+    config()->set('laravel_salt.notify.1', []);
     config()->set('laravel_salt.tasks.991', FlowExamplePatientBsnJob::class);
     config()->set('laravel_salt.tasks.992', FlowExampleErrorJob::class);
     config()->set('laravel_salt.flows.10', [991, 992, [400, 500], 300]);

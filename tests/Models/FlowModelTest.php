@@ -20,7 +20,7 @@ it('returns the created flow from add', function () {
 it('does not dispatch tasks before try_after', function () {
     Queue::fake();
 
-    config()->set('laravel-salt.tasks.991', FlowExampleSetLabtrainIdJob::class);
+    config()->set('laravel_salt.tasks.991', FlowExampleSetLabtrainIdJob::class);
 
     $flow = Flow::factory()->create([
         'type' => 10,
