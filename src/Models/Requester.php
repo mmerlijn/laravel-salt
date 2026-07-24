@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Attributes\UseResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
 use mmerlijn\LaravelSalt\Http\Resources\Requester\RequesterResource;
 use mmerlijn\LaravelSalt\Models\Traits\AddressModelTrait;
 use mmerlijn\LaravelSalt\Models\Traits\CanHaveNotesTrait;
@@ -20,18 +23,31 @@ use mmerlijn\msgRepo\Enums\PatientSexEnum;
 use mmerlijn\msgRepo\Enums\VektisType;
 use mmerlijn\msgRepo\Enums\YesNoEnum;
 use mmerlijn\msgRepo\HasNameTrait;
+use mmerlijn\msgRepo\Name;
 use mmerlijn\msgRepo\Phone;
 use Workbench\Database\Factories\RequesterFactory;
 
 
 /**
  * @property string $agbcode
+ * @property PatientSexEnum $sex
  * @property YesNoEnum $is_gp
  * @property string $initials
+ * @property string $lastname
+ * @property string $own_lastname
+ * @property string $prefix
+ * @property string $own_prefix
+ * @property string $postcode
+ * @property string $city
+ * @property string $street
+ * @property string $building
  * @property mixed $building_nr
- * @property string $name
+ * @property Name $name
+ * @property string $vektis_name
  * @property Address $address
  * @property Phone $phone
+ * @property string $email
+ * @property string $fax
  * @property array $owners
  * @property array $qualifications
  * @property Requester{} $organizations
@@ -40,7 +56,7 @@ use Workbench\Database\Factories\RequesterFactory;
 #[ObservedBy(RequesterObserver::class), UseResource(RequesterResource::class)]
 class Requester extends Model
 {
-    use HasFactory, SoftDeletes, CanHaveNotesTrait, HasNameTrait, NameModelTrait, AddressModelTrait, FlowModelTrait;
+    use HasFactory, Notifiable, SoftDeletes, CanHaveNotesTrait, HasNameTrait, NameModelTrait, AddressModelTrait, FlowModelTrait;
 
     protected $primaryKey = 'agbcode';
     public $incrementing = false;
@@ -84,6 +100,29 @@ class Requester extends Model
             'organization_agbcode',
             'requester_agbcode'
         )->withTimestamps();
+    }
+
+    public function patients(): HasMany
+    {
+        return $this->hasMany(Patient::class, 'last_requester', 'agbcode');
+    }
+
+    public function followups(): HasMany
+    {
+        $class = config('laravel-salt.classes.followup');
+
+        if (!$class) {
+            throw new \RuntimeException(
+                "De 'laravel-salt.classes.followup' configuratie is niet ingesteld, maar de followup relatie wordt wel aangeroepen."
+            );
+        }
+        return $this->hasMany($class::class);
+
+    }
+
+    public function careGroups(): MorphMany
+    {
+        return $this->morphMany(CareGroup::class, 'requester');
     }
 
     public function getRelatedAttribute(): BelongsToMany
