@@ -5,15 +5,15 @@ namespace mmerlijn\LaravelSalt\Helpers;
 use Carbon\Carbon;
 use DOMDocument;
 use DOMXPath;
-use mmerlijn\LaravelSalt\Actions\FindOrCreateRequester;
+use Illuminate\Foundation\Auth\User;
 use mmerlijn\LaravelSalt\Helpers\Traits\VektisQualificationsTrait;
 use mmerlijn\LaravelSalt\Models\Requester;
+use mmerlijn\LaravelSalt\Notifications\ProblemNotification;
 use mmerlijn\msgRepo\Address;
 use mmerlijn\msgRepo\Enums\PatientSexEnum;
 use mmerlijn\msgRepo\Enums\VektisType;
 use mmerlijn\msgRepo\Enums\YesNoEnum;
 use mmerlijn\msgRepo\Name;
-use mmerlijn\msgRepo\Phone;
 
 /*
  * Organizations: https://www.vektis.nl/agb-register/onderneming-12345678
@@ -47,6 +47,20 @@ class VektisGrabber
 {
     use VektisQualificationsTrait;
 
+    public array $data = [
+        'name' => '',
+        'sex' => '',
+        'address' => null,
+        'email' => '',
+        'phone' => '',
+        'qualifications' => [],
+        'relations' => [],
+        'start' => null,
+        'end' => null,
+        'gp' => YesNoEnum::NO,
+        'type' => VektisType::ZORGVERLENER,
+    ];
+
     public function __invoke(VektisType $type, string $agbcode): array|null
     {
 
@@ -70,6 +84,7 @@ class VektisGrabber
 
             }
             if (!$html) {
+                User::find(1)->notify(new ProblemNotification("AGBcode: $agbcode niet gevonden op Vektis met all urls"));
                 logger("VektisGrabber: AGBcode: $agbcode not found at Vektis with all urls");
                 return [
                     'agbcode' => $agbcode,
@@ -84,162 +99,252 @@ class VektisGrabber
             @$dom->loadHTML($html);
 
             $xpath = new DOMXPath($dom);
-            $data = ['type' => $type];
 
             if (str_contains(trim($xpath->evaluate("string(//h1[@class='title'])") ?? ''), "606")) {
                 logger("VektisGrabber: AGBcode: $agbcode blokked: $url");
                 throw new \Exception("ERROR 606 bij Vektis ophalen voor AGBcode: $agbcode");
             }
-            //get name (and sex)
-            $data['name'] = trim($xpath->evaluate("string(//div[@class='data-stack__label' and normalize-space()='Naam']/following-sibling::div[@class='data-stack__value'])") ?? '');
-            if ($type === VektisType::ZORGVERLENER) {
-
-                $geslacht = trim($xpath->evaluate("string(//div[@class='data-stack__label' and normalize-space()='Geslacht']/following-sibling::div[@class='data-stack__value'])") ?? '');
-                if ($geslacht == 'Vrouwelijk') {
-                    $data['sex'] = PatientSexEnum::FEMALE;
-                } elseif ($geslacht == 'Mannelijk') {
-                    $data['sex'] = PatientSexEnum::MALE;
-                }
+            switch ($type) {
+                case VektisType::ZORGVERLENER:
+                    $this->getNameAndSex($xpath);
+                    $this->getQualifications($xpath);
+                    $this->getWorkRelations($xpath);
+                    $this->data['type'] = VektisType::ZORGVERLENER;
+                    break;
+                case VektisType::ONDERNEMING:
+                    $this->getNameAndAddress($xpath);
+                    $this->getQualifications($xpath);
+                    $this->getZorgverleners($xpath, VektisType::ONDERNEMING);
+                    $this->data['type'] = VektisType::ONDERNEMING;
+                    break;
+                case VektisType::VESTIGING:
+                    $this->getNameAndAddress($xpath);
+                    $this->getQualifications($xpath);
+                    $this->getZorgverleners($xpath, VektisType::VESTIGING);
+                    $this->data['type'] = VektisType::VESTIGING;
+                    break;
             }
-            if (str_contains($data['name'], 'niet gevonden')) {
-                logger("VektisGrabber: AGBcode: $agbcode not found at Vektis with url: $url");
+
+            if (str_contains($this->data['name'], 'niet gevonden') or !$this->data['name']) {
+                logger("VektisGrabber: AGBcode: $agbcode (geen naam gevonden) not found at Vektis with url: $url");
+                User::find(1)->notify(new ProblemNotification("AGBcode: $agbcode (geen naam gevonden) op Vektis met url: $url"));
                 throw new \Exception("AGBcode: $agbcode niet gevonden op Vektis");
-            } elseif (!$data['name']) {
-                logger("VektisGrabber: No name found for AGBcode: $agbcode with url: $url");
-                throw new \Exception("Geen naam gevonden voor AGBcode: $agbcode");
             }
-
-            //get address for organizations
-            if ($type === VektisType::ONDERNEMING or $type === VektisType::VESTIGING) {
-                $bezoekAdresNode = $xpath->query("//h4[contains(., 'Bezoekadres')]/following-sibling::div[1]")->item(0);
-                if ($bezoekAdresNode) {
-                    $lines = array_filter(array_map('trim', explode(",", $bezoekAdresNode->textContent)));
-
-                    $data['address'] = new Address(
-                        postcode: substr($lines[0] ?? '', -6),
-                        city: str($lines[1] ?? '')->beforeLast(' ')->trim()->toString(),
-                        street: trim(substr($lines[0] ?? '', 0, -6)),
-                    );
-                }
-                // E-mail Algemeen
-                $data['email'] = trim($xpath->evaluate("string(//div[div[@class='mb-2 title title--h5' and contains(.,'E-mail')]]//h4[contains(.,'Algemeen')]/following-sibling::div[@class='text-nowrap'][1])"));
-                // Telefoon
-                $data['phone'] = trim($xpath->evaluate("string(//div[div[@class='mb-2 title title--h5' and contains(.,'Telefoonnummer')]]//h4[contains(.,'Algemeen')]/following-sibling::div[@class='text-nowrap'][1])"));
-            }
-
-            // Get type of care provider for caregivers
-            $qualification_data = $xpath->evaluate("string(//div[contains(@class, 'agb-code-container')][.//h3[contains(., 'Mijn kwalificaties')]])");
-            $data['qualifications'] = [];
-            foreach ($this->vektis_qualifications_list as $code => $name) {
-                if (str_contains($qualification_data, $code)) {
-                    $data['qualifications'][] = $code;
-                }
-            }
-
-            $end = trim(trim($xpath->evaluate("string(//div[contains(@class, 'agb-code-container')][.//h3[contains(., 'Mijn kwalificaties')]]//div[@class='data-stack__label' and contains(.,'Einde')]/following-sibling::div[@class='data-stack__value'])")), "-");
-            $start = trim($xpath->evaluate("string(//div[contains(@class, 'agb-code-container')][.//h3[contains(., 'Mijn kwalificaties')]]//div[@class='data-stack__label' and contains(.,'Start')]/following-sibling::div[@class='data-stack__value'])"));
-            if ($end) {
-                $data['end'] = $this->parseDate($end);
-            }
-            if ($start) {
-                $data['start'] = $this->parseDate($start);
-            }
-            $data['gp'] = (Caregiver::isGp($data['qualifications'])) ? YesNoEnum::YES : YesNoEnum::NO;
-
-            //relations
-            $relations = [];
-            if ($type === VektisType::ZORGVERLENER) {
-                foreach ($xpath->query("//table[contains(@class, 'card-table')][.//caption[contains(., 'Ik heb een arbeidsrelatie met')]]/tbody/tr") as $tr) {
-                    $relation = $this->relationsFromTr($tr, $xpath, VektisType::ONDERNEMING);
-                    if ($relation) {
-                        $relations[] = $relation;
-                    }
-                }
-            } elseif ($type === VektisType::ONDERNEMING) {
-                //veel resultaten
-                //caregivers
-                if ($xpath->query("//table[contains(@id, 'DataTables_Table_0')]")->length > 0) {
-                    foreach ($xpath->query("//table[contains(@id, 'DataTables_Table_0')]/tbody/tr") as $tr) {
-                        $relation = $this->relationsFromTr($tr, $xpath, VektisType::ZORGVERLENER);
-                        if ($relation) {
-                            $relations[] = $relation;
-                        }
-                    }
-                } else {
-                    foreach ($xpath->query("//table[contains(@class, 'card-table')][.//caption[contains(., 'Bij deze onderneming werken de volgende zorgverleners')]]/tbody/tr") as $tr) {
-                        $relation = $this->relationsFromTr($tr, $xpath, VektisType::ZORGVERLENER);
-                        if ($relation) {
-                            $relations[] = $relation;
-                        }
-                    }
-                }
-                // other organizations
-                //veel resultaten
-                if ($xpath->query("//table[contains(@id, 'DataTables_Table_1')]")->length > 0) {
-                    //loop through rows of the table
-                    foreach ($xpath->query("//table[contains(@id, 'DataTables_Table_1')]/tbody/tr") as $tr) {
-                        $relation = $this->relationsFromTr($tr, $xpath, VektisType::ONDERNEMING);
-                        if ($relation) {
-                            $relations[] = $relation;
-                        }
-                    }
-                } else {
-                    foreach ($xpath->query("//table[contains(@class, 'card-table')][.//caption[contains(., 'Deze onderneming heeft een relatie met de volgende ondernemingen')]]/tbody/tr") as $tr) {
-                        $relation = $this->relationsFromTr($tr, $xpath, VektisType::ONDERNEMING);
-                        if ($relation) {
-                            $relations[] = $relation;
-                        }
-                    }
-                }
-            } else {//vestiging
-                //caregivers
-                foreach ($xpath->query("//table[contains(@class, 'card-table')][.//caption[contains(., 'Werkzaam als zorgverlener')]]/tbody/tr") as $tr) {
-                    $relation = $this->relationsFromTr($tr, $xpath, VektisType::ZORGVERLENER);
-                    if ($relation) {
-                        $relations[] = $relation;
-                    }
-                }
-            }
-            $data['relations'] = $relations;
             try {
+                $fields = [
+                    'is_gp' => $this->data['gp'] ?? YesNoEnum::NO,
+                    'vektis_name' => $this->data['vektis_name'] ?? '',
+                    'type' => $this->data['type'] ?? VektisType::NOT_FOUND,
+                    'qualifications' => $this->data['qualifications'] ?? [],
+                    'vektis_at' => now(),
+                    'start_at' => $this->data['start'] ?? null,
+                    //'deleted_at' => $this->data['end'] ?? null,
+                ];
+
                 //update the Organization / Requester
-                    $requester = new FindOrCreateRequester()($data,true);
+                if ($this->data['type'] == VektisType::ZORGVERLENER) {
+                    $name = new Name(name: $this->data['name']);
+                    $fields['initials'] = $name->initials;
+                    $fields['own_lastname'] = $name->own_lastname;
+                    $fields['own_prefix'] = $name->own_prefix;
+                } elseif ($this->data['type'] == VektisType::ONDERNEMING) {
+                    $fields['city'] = $this->data['city'] ?? null;
+                    $fields['street'] = $this->data['street'] ?? null;
+                    $fields['postcode'] = $this->data['postcode'] ?? null;
+                    $fields['building'] = $this->data['building'] ?? null;
+
+                }
+                if ($this->data['email']) {
+                    $fields['email'] = $this->data['email'];
+                }
+                if ($this->data['phone']) {
+                    $fields['phone'] = $this->data['phone'];
+                }
+
+                Requester::updateOrCreate(
+                    ['agbcode' => $agbcode],
+                    $fields
+                );
 
             } catch (\Exception|\Error $e) {
                 logger("VektisGrabber: Error updating database for AGBcode: $agbcode - " . $e->getMessage());
             }
-
-            return $data;
+            return $this->data;
         } catch (\Exception $e) {
+            User::find(1)->notify(new ProblemNotification("VektisGrabber: Error grabbing AGBcode: $agbcode - " . $e->getMessage()));
             logger("VektisGrabber: Error grabbing AGBcode: $agbcode - " . $e->getMessage());
             return null;
         }
     }
 
-    private function relationsFromTr($tr, DOMXPath $xpath, VektisType $vektisType): array|null
+
+    private function getNameAndSex(DOMXPath $xpath): void
     {
-        $tds = $xpath->query("td", $tr);
-        $name = trim($tds->item(0)->textContent);
-        $role = trim($tds->item(1)->textContent);
-        $agbcode = trim($tds->item(2)->textContent);
-        $start = trim($tds->item(3)->textContent);
-        $end = trim(trim($tds->item(4)->textContent), "-");
-        if ($agbcode) {
-            return [
-                'name' => $name,
-                'role' => $role,
-                'agbcode' => $agbcode,
+        $naamQuery = "//dt[normalize-space(text())='Naam']/following-sibling::dd[1]";
+        $geslachtQuery = "//dt[normalize-space(text())='Geslacht']/following-sibling::dd[1]";
+
+        $naam = trim($xpath->query($naamQuery)->item(0)?->nodeValue ?? '');
+        $geslacht = trim($xpath->query($geslachtQuery)->item(0)?->nodeValue ?? '');
+        if ($geslacht == 'Vrouwelijk') {
+            $this->data['sex'] = PatientSexEnum::FEMALE;
+        } elseif ($geslacht == 'Mannelijk') {
+            $this->data['sex'] = PatientSexEnum::MALE;
+        }
+        $this->data['name'] = $naam;
+    }
+
+    private function getNameAndAddress(DOMXPath $xpath): void
+    {
+        //$naamQuery = "//dt[normalize-space(text())='Naam']/following-sibling::dd[1]";
+        $naamQuery = "//h2[normalize-space(text())='Basisregistratie']/ancestor::section//dt[normalize-space(text())='Naam']/following-sibling::dd[1]";
+        $naam = trim($xpath->query($naamQuery)->item(0)?->nodeValue ?? '');
+
+// 2. Bezoekadres (straat + huisnummer: eerste tekst-node van de p onder Bezoekadres)
+        $adresQuery = "//h3[normalize-space(text())='Bezoekadres']/following-sibling::p[1]/text()[1]";
+        $adres = trim($xpath->query($adresQuery)->item(0)?->nodeValue ?? '');
+
+// 3. Postcode & Plaats (tweede tekst-node van de p onder Bezoekadres, na de <br>)
+        $postcodeCityQuery = "//h3[normalize-space(text())='Bezoekadres']/following-sibling::p[1]/text()[2]";
+        $postcodeCity = trim($xpath->query($postcodeCityQuery)->item(0)?->nodeValue ?? '');
+
+// 4. E-mail (div onder E-mail -> Algemeen)
+        $emailQuery = "//div[div='E-mail']//div[contains(@class, 'text-nowrap')]";
+        $email = trim($xpath->query($emailQuery)->item(0)?->nodeValue ?? '');
+
+// 5. Telefoonnummer (div onder Telefoonnummer -> Algemeen)
+        $phoneQuery = "//div[div='Telefoonnummer']//div[contains(@class, 'text-nowrap')]";
+        $phone = trim($xpath->query($phoneQuery)->item(0)?->nodeValue ?? '');
+
+        $this->data['name'] = $naam;
+        $this->data['address'] = new Address(
+            postcode: str($postcodeCity)->before(",")->trim()->toString(),
+            city: str($postcodeCity)->afterLast(',')->trim()->toString(),
+            street: $adres,
+        );
+        $this->data['email'] = $email;
+        $this->data['phone'] = $phone;
+    }
+
+    private function getQualifications(DOMXPath $xpath): void
+    {
+        $cardQuery = "//h3[normalize-space(text())='Mijn kwalificaties']/following::div[contains(concat(' ', normalize-space(@class), ' '), ' card ')]";
+        $cards = $xpath->query($cardQuery);
+
+        $kwalificaties = [];
+
+        // 2. Loop door elke kaart heen
+        foreach ($cards as $card) {
+            // Relatieve XPath queries (let op de punt '.' aan het begin!):
+
+            // Naam van de kwalificatie (h3 binnen de card)
+            $qualificationQuery = ".//h3";
+
+            // Startdatum
+            $startQuery = ".//dt[normalize-space(text())='Start']/following-sibling::dd[1]";
+
+            // Einddatum
+            $eindeQuery = ".//dt[normalize-space(text())='Einde']/following-sibling::dd[1]";
+
+            $qualification = trim($xpath->query($qualificationQuery, $card)->item(0)?->nodeValue ?? '');
+            $start = $this->parseDate(trim($xpath->query($startQuery, $card)->item(0)?->nodeValue ?? ''));
+            $einde = $this->parseDate(trim($xpath->query($eindeQuery, $card)->item(0)?->nodeValue ?? ''));
+            foreach ($this->vektis_qualifications_list as $code => $name) {
+                if ($einde) {
+                    continue;
+                }
+                if (str_contains($qualification, $code)) { //als er een code in de naam staat, voeg deze toe aan de qualifications array
+                    $this->data['qualifications'][] = $code;
+                }
+            }
+
+
+            $this->data['start'] = $start;
+            $this->data['end'] = $einde;
+
+        }
+        $this->data['gp'] = $this->isGp($this->data['qualifications']) ? YesNoEnum::YES : YesNoEnum::NO;
+    }
+
+    private function getWorkRelations(DOMXPath $xpath): void
+    {
+// 1. Zoek specifiek naar de <tbody> van de tabel die de juiste caption heeft
+        $rijenQuery = "//table[caption[normalize-space(text())='Ik heb een arbeidsrelatie met']]//tbody/tr";
+        $rijen = $xpath->query($rijenQuery);
+
+// 2. Loop door de rijen van dát specifieke tabelblok
+        foreach ($rijen as $rij) {
+            // Naam (zit in een <a> tag in de 1e cel)
+            $naamQuery = ".//td[1]";
+            // Rol (2e cel)
+            $rolQuery = ".//td[2]";
+            // AGB-code (3e cel)
+            $agbQuery = ".//td[3]";
+            // Startdatum (4e cel)
+            $startQuery = ".//td[4]";
+            // Einddatum (5e cel)
+            $eindeQuery = ".//td[5]";
+
+            $naam = trim($xpath->query($naamQuery, $rij)->item(0)?->nodeValue ?? '');
+            $rol = trim($xpath->query($rolQuery, $rij)->item(0)?->nodeValue ?? '');
+            $agb = trim($xpath->query($agbQuery, $rij)->item(0)?->nodeValue ?? '');
+            $start = trim($xpath->query($startQuery, $rij)->item(0)?->nodeValue ?? '');
+            $einde = trim($xpath->query($eindeQuery, $rij)->item(0)?->nodeValue ?? '');
+
+            $this->data['relations'][] = [
+                'name' => $this->formatName($naam),
+                'role' => $rol,
+                'agbcode' => $agb,
                 'start' => $this->parseDate($start),
-                'end' => $this->parseDate($end),
-                'type' => $vektisType,
+                'end' => $this->parseDate($einde),
+                'type' => VektisType::ONDERNEMING,
             ];
         }
-        return null;
+    }
+
+    private function getZorgverleners(DOMXPath $xpath, VektisType $type): void
+    {
+// 1. Zoek specifiek naar de <tbody> van de tabel die de juiste caption heeft
+        if ($type == VektisType::ONDERNEMING) {
+            $rijenQuery = "//table[caption[normalize-space(text())='Bij deze onderneming werken de volgende zorgverleners']]//tbody/tr";
+        } else {
+            $rijenQuery = "//table[caption[normalize-space(text())='Werkzaam als zorgverlener']]//tbody/tr";
+        }
+        $rijen = $xpath->query($rijenQuery);
+
+// 2. Loop door de rijen van dát specifieke tabelblok
+        foreach ($rijen as $rij) {
+            // Naam (zit in een <a> tag in de 1e cel)
+            $naamQuery = ".//td[1]";
+            // Rol (2e cel)
+            $rolQuery = ".//td[2]";
+            // AGB-code (3e cel)
+            $agbQuery = ".//td[3]";
+            // Startdatum (4e cel)
+            $startQuery = ".//td[4]";
+            // Einddatum (5e cel)
+            $eindeQuery = ".//td[5]";
+
+            $naam = trim($xpath->query($naamQuery, $rij)->item(0)?->nodeValue ?? '');
+            $rol = trim($xpath->query($rolQuery, $rij)->item(0)?->nodeValue ?? '');
+            $agb = trim($xpath->query($agbQuery, $rij)->item(0)?->nodeValue ?? '');
+            $start = trim($xpath->query($startQuery, $rij)->item(0)?->nodeValue ?? '');
+            $einde = trim($xpath->query($eindeQuery, $rij)->item(0)?->nodeValue ?? '');
+
+            $this->data['relations'][] = [
+                'name' => $this->formatName($naam),
+                'role' => $rol,
+                'agbcode' => $agb,
+                'start' => $this->parseDate($start),
+                'end' => $this->parseDate($einde),
+                'type' => VektisType::ZORGVERLENER,
+            ];
+        }
     }
 
     private function getHtml(string $url): string|null
     {
-
+        //return file_get_contents(__DIR__ . "/../../../tests/Unit/Actions/App/vektis-search-zorgverlener.html");
+        //return file_get_contents(__DIR__ . "/../../../tests/Unit/Actions/App/vektis-search-onderneming.html");
         // HTML ophalen met cURL
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -248,7 +353,6 @@ class VektisGrabber
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3');
         $html = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
         if ($http_code == 200) {
             return $html;
         }
@@ -270,12 +374,19 @@ class VektisGrabber
             return null;
         }
     }
+
     private function isGp(array $qualifications): bool
-{
-    return in_array('0100', $qualifications) ||
-        in_array('0101', $qualifications) ||
-        in_array('0102', $qualifications) ||
-        in_array('0103', $qualifications) ||
-        in_array('0110', $qualifications);
-}
+    {
+        return in_array('0100', $qualifications) ||
+            in_array('0101', $qualifications) ||
+            in_array('0102', $qualifications) ||
+            in_array('0103', $qualifications) ||
+            in_array('0110', $qualifications);
+    }
+
+    private function formatName(string $name): string
+    {
+        return preg_replace('/\s+/', ' ', trim($name));
+    }
+
 }

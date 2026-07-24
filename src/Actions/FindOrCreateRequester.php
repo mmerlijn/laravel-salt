@@ -12,19 +12,20 @@ use mmerlijn\msgRepo\Address;
 use mmerlijn\msgRepo\Contact;
 use mmerlijn\msgRepo\Enums\VektisType;
 use mmerlijn\msgRepo\Name;
+use mmerlijn\msgRepo\Organization;
 
 
 class FindOrCreateRequester
 {
     use FormatTrait;
 
-    public function __invoke(array|Contact|\mmerlijn\msgRepo\Organization $data, bool $update = true): Requester
+    public function __invoke(array|Contact|Organization $data, bool $update = true): Requester
     {
         if ($data instanceof Contact) {
             $requesterArray = [
                 'type' => VektisType::ZORGVERLENER,
                 'agbcode' => $data->agbcode,
-                'vektis_name'=> $data->name->getNameReverse(),
+                'vektis_name' => $data->name->getNameReverse(),
                 'initials' => $data->name->initials,
                 'lastname' => $data->name->lastname,
                 'prefix' => $data->name->prefix,
@@ -32,7 +33,7 @@ class FindOrCreateRequester
                 'own_prefix' => $data->name->own_prefix,
                 'phone' => $data->phone?->number ?? null,
             ];
-        }elseif ($data instanceof \mmerlijn\msgRepo\Organization) {
+        } elseif ($data instanceof Organization) {
             $requesterArray = [
                 'type' => VektisType::ONDERNEMING,
                 'agbcode' => $data->agbcode,
@@ -74,17 +75,17 @@ class FindOrCreateRequester
 
         $v->validate();
 
-        if($update){
-            $r= Requester::updateOrCreate([
+        if ($update) {
+            $r = Requester::updateOrCreate([
                 'agbcode' => $requesterArray['agbcode']
             ], $requesterArray);
         }
-        $r= Requester::firstOrCreate([
+        $r = Requester::firstOrCreate([
             'agbcode' => $requesterArray['agbcode']
         ], $requesterArray);
 
-        if(config('laravel_salt.vektis',false)){
-            GetCaregiverJob::dispatch($r->agbcode,$r->type);
+        if (config('laravel_salt.vektis', false)) {
+            GetCaregiverJob::dispatch($r->type, $r->agbcode);
         }
         return $r;
     }

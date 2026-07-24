@@ -16,7 +16,7 @@ class RequesterObserver
 
     public function created(Requester $requester): void
     {
-        if (config('laravel_salt.vektis', false)) {
+        if (!$requester->vektis_at and config('laravel_salt.vektis', false)) {
             GetCaregiverJob::dispatch(VektisType::ZORGVERLENER, $requester->agbcode);
         }
     }
