@@ -85,7 +85,9 @@ class FindOrCreateRequester
         ], $requesterArray);
 
         if (config('laravel_salt.vektis', false)) {
-            GetCaregiverJob::dispatch($r->type, $r->agbcode);
+            if ($r->vektis_at->diffInDays(now()) > random_int(180, 1050)) {
+                GetCaregiverJob::dispatch($r->type, $r->agbcode);
+            }
         }
         return $r;
     }
