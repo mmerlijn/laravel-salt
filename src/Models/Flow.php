@@ -123,7 +123,7 @@ class Flow extends Model
                 Flow::create([
                     'payload_id' => is_array($payload) ? null : $payload->id,
                     'payload_type' => is_array($payload) ? null : $payload->getMorphClass(),
-                    'type' => $flow,
+                    'type' => $flow?->value ?? $flow,
                     'stack' => $stack,
                     'try_after' => now()->addMinutes($wait)->subSecond(),
                     'attempts' => 0,
@@ -134,7 +134,7 @@ class Flow extends Model
             }
         }
         return self::create([
-            'type' => $flow,
+            'type' => $flow?->value ?? $flow,
             'stack' => $stack,
             'flow_error_id' => $fe->id ?? null,
             'try_after' => now()->addMinutes($wait)->subSecond(),
