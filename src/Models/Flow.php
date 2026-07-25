@@ -110,18 +110,28 @@ class Flow extends Model
             ]);
         }
         if ($payload) {
-            return Flow::updateOrCreate([
-                'payload_id' => is_array($payload) ? null : $payload->id,
-                'payload_type' => is_array($payload) ? null : $payload->getMorphClass(),
-                'type' => $flow,
-            ], [
-                'stack' => $stack,
-                'try_after' => now()->addMinutes($wait)->subSecond(),
-                'attempts' => 0,
-                'flow_error_id' => $fe->id ?? null,
-                'active' => true,
-                'data' => is_array($payload) ? $payload : $data
-            ]);
+            $flow = Flow::whereType($flow?->value ?? $flow)->wherePayloadType(is_array($payload) ? null : $payload->getMorphClass())
+                ->wherePayloadId(is_array($payload) ? null : $payload->id)
+                ->first();
+            if ($flow) {
+                $flow->try_after = now()->addMinutes($wait)->subSecond();
+                $flow->attempts = 0;
+                $flow->active = true;
+                $flow->save();
+                return $flow;
+            } else {
+                Flow::create([
+                    'payload_id' => is_array($payload) ? null : $payload->id,
+                    'payload_type' => is_array($payload) ? null : $payload->getMorphClass(),
+                    'type' => $flow,
+                    'stack' => $stack,
+                    'try_after' => now()->addMinutes($wait)->subSecond(),
+                    'attempts' => 0,
+                    'flow_error_id' => $fe->id ?? null,
+                    'active' => true,
+                    'data' => is_array($payload) ? $payload : $data
+                ]);
+            }
         }
         return self::create([
             'type' => $flow,
