@@ -110,15 +110,15 @@ class Flow extends Model
             ]);
         }
         if ($payload) {
-            $flow = Flow::whereType($flow?->value ?? $flow)->wherePayloadType(is_array($payload) ? null : $payload->getMorphClass())
+            $flow_model = Flow::whereType($flow?->value ?? $flow)->wherePayloadType(is_array($payload) ? null : $payload->getMorphClass())
                 ->wherePayloadId(is_array($payload) ? null : $payload->id)
                 ->first();
-            if ($flow) {
-                $flow->try_after = now()->addMinutes($wait)->subSecond();
-                $flow->attempts = 0;
-                $flow->active = true;
-                $flow->save();
-                return $flow;
+            if ($flow_model) {
+                $flow_model->try_after = now()->addMinutes($wait)->subSecond();
+                $flow_model->attempts = 0;
+                $flow_model->active = true;
+                $flow_model->save();
+                return $flow_model;
             } else {
                 Flow::create([
                     'payload_id' => is_array($payload) ? null : $payload->id,
