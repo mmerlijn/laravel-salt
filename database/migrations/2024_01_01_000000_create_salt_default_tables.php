@@ -182,6 +182,7 @@ return new class extends Migration {
         Schema::create('flows', function (Blueprint $table) {
             $table->id();
             $table->unsignedSmallInteger('type');
+            $table->string('origin', 255)->nullable();
             $table->boolean('active')->default(0);
             $table->string('payload_type', 100)->nullable();
             $table->unsignedBigInteger('payload_id')->nullable();

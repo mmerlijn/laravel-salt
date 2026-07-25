@@ -25,6 +25,7 @@ use Workbench\Database\Factories\FlowFactory;
  * @property int $flow_error_id
  * @property int $payload_id
  * @property string $payload_type
+ * @property string $origin
  * @property int $type
  * @property Model|null $payload
  * @property array $data
@@ -47,6 +48,7 @@ class Flow extends Model
     protected $fillable = [
         'type',
         'stack',
+        'origin',
         'flow_error_id',
         'payload_id',
         'payload_type',
@@ -96,7 +98,7 @@ class Flow extends Model
         return $this->morphTo()->withTrashed();
     }
 
-    public static function add(int|BackedEnum $flow, null|array|Model $payload, $wait = 0, array $data = []): self
+    public static function add(int|BackedEnum $flow, null|Model $payload, $wait = 0, array $data = []): self
     {
         $stack = self::getStackFromConfig($flow?->value ?? $flow);
         if (!$stack) {
@@ -106,34 +108,47 @@ class Flow extends Model
                 'from_id' => $payload?->id ?? null,
                 'message' => "Flow $flow has no stack configured in laravel_salt.config",
                 'notify' => true,
-
             ]);
         }
         if ($payload) {
-            $flow_model = Flow::whereType($flow?->value ?? $flow)->wherePayloadType(is_array($payload) ? null : $payload->getMorphClass())
-                ->wherePayloadId(is_array($payload) ? null : $payload->id)
-                ->first();
+            $origin = $payload->getMorphClass() . $payload->id;
+        } elseif (!empty($data)) {
+            $origin = md5(serialize($data)) . ($data['id'] ?? '');
+        } else {
+            $origin = "ERROR" . date('Y-m-d H:i:s');
+            $fe = FlowError::create([
+                'level' => ErrorLevelEnum::MENNO,
+                'from_type' => self::class,
+                'from_id' => $payload?->id ?? null,
+                'message' => "Flow $flow has no stack configured in laravel_salt.config",
+                'notify' => true,
+            ]);
+        }
+        if ($payload) {
+            $flow_model = Flow::whereType($flow?->value ?? $flow)->whereOrigin($origin)->first();
             if ($flow_model) {
                 $flow_model->try_after = now()->addMinutes($wait)->subSecond();
                 $flow_model->attempts = 0;
                 $flow_model->active = true;
                 $flow_model->save();
                 return $flow_model;
-            } else {
-                Flow::create([
-                    'payload_id' => is_array($payload) ? null : $payload->id,
-                    'payload_type' => is_array($payload) ? null : $payload->getMorphClass(),
-                    'type' => $flow?->value ?? $flow,
-                    'stack' => $stack,
-                    'try_after' => now()->addMinutes($wait)->subSecond(),
-                    'attempts' => 0,
-                    'flow_error_id' => $fe->id ?? null,
-                    'active' => true,
-                    'data' => is_array($payload) ? $payload : $data
-                ]);
             }
+            return Flow::create([
+                'origin' => $origin,
+                'payload_id' => $payload->id,
+                'payload_type' => $payload->getMorphClass(),
+                'type' => $flow?->value ?? $flow,
+                'stack' => $stack,
+                'try_after' => now()->addMinutes($wait)->subSecond(),
+                'attempts' => 0,
+                'flow_error_id' => $fe->id ?? null,
+                'active' => true,
+                'data' => $data
+            ]);
+
         }
         return self::create([
+            'origin' => $origin,
             'type' => $flow?->value ?? $flow,
             'stack' => $stack,
             'flow_error_id' => $fe->id ?? null,
