@@ -12,7 +12,7 @@ class RequesterNestedResource extends JsonResource
     {
         return [
             'vektis_name' => $this->vektis_name,
-            'name' => $this->when(!!$this->own_lastname, $this->name->toArray()),
+            'name' => $this->name->toArray(),
             'sex' => $this->sex ? $this->sex->value : '',
             'agbcode' => $this->agbcode,
             'phone' => $this->phone ? (string)$this->phone : '',
