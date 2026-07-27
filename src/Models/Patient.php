@@ -132,7 +132,7 @@ class Patient extends Model
                 "De 'laravel_salt.classes.followup' configuratie is niet ingesteld, maar de followup relatie wordt wel aangeroepen."
             );
         }
-        return $this->hasMany($class::class);
+        return $this->hasMany($class);
 
     }
 
@@ -155,7 +155,7 @@ class Patient extends Model
                 "De 'laravel_salt.classes.test' configuratie is niet ingesteld, maar de tests relatie wordt wel aangeroepen."
             );
         }
-        return $this->hasMany($class::class);
+        return $this->hasMany($class);
     }
 
     public function requester(): BelongsTo
@@ -190,7 +190,7 @@ class Patient extends Model
         if (!$class) {
             throw new \RuntimeException("De 'laravel_salt.classes.request' configuratie is niet ingesteld, maar de request relatie wordt wel aangeroepen.");
         }
-        return $this->hasMany($class::class);
+        return $this->hasMany($class);
     }
 
     /* TODO tzt uitbreiden met patient_id om als match te gebruiken */
