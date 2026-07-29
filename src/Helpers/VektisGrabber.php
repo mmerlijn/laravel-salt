@@ -133,7 +133,7 @@ class VektisGrabber
             try {
                 $fields = [
                     'is_gp' => $this->data['gp'] ?? YesNoEnum::NO,
-                    'vektis_name' => $this->data['vektis_name'] ?? '',
+                    'vektis_name' => $this->data['name'] ?? '',
                     'type' => $this->data['type'] ?? VektisType::NOT_FOUND,
                     'qualifications' => $this->data['qualifications'] ?? [],
                     'vektis_at' => now(),
