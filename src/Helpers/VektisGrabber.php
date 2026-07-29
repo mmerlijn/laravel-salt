@@ -137,7 +137,7 @@ class VektisGrabber
                     'type' => $this->data['type'] ?? VektisType::NOT_FOUND,
                     'qualifications' => $this->data['qualifications'] ?? [],
                     'vektis_at' => now(),
-                    'start_at' => $this->data['start'] ?? null,
+                    'started_at' => $this->data['start'] ?? null,
                     //'deleted_at' => $this->data['end'] ?? null,
                 ];
 
