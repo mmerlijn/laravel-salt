@@ -24,7 +24,7 @@ class RequesterApiController extends Controller
         return response()->json($requester->toResource());
     }
 
-    public function storeVektisAgbcode(HttpRequest $request)
+    public function store(HttpRequest $request)
     {
         $request->validate(['agbcode' => 'required|regex:/^\d{8}$/']);
         //kijken of agbcode al bestaat
