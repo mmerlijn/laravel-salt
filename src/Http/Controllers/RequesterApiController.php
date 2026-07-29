@@ -27,10 +27,13 @@ class RequesterApiController extends Controller
     public function storeVektisAgbcode(HttpRequest $request)
     {
         $request->validate(['agbcode' => 'required|regex:/^\d{8}$/']);
-
-        new VektisGrabber()(VektisType::ZORGVERLENER, $request->agbcode);
-
+        //kijken of agbcode al bestaat
         $requester = Requester::whereAgbcode($request->agbcode)->first();
+        if (!$requester) {
+            new VektisGrabber()(VektisType::ZORGVERLENER, $request->agbcode);
+            $requester = Requester::whereAgbcode($request->agbcode)->first();
+        }
+
         if ($requester) {
             return response()->json($requester->toResource());
         } else {
