@@ -34,7 +34,7 @@ Route::prefix('api')
             ->only(['index', 'show', 'edit', 'update', 'destroy'])
             ->parameters(['flows' => 'flow']);
         Route::resource('requesters', RequesterApiController::class)
-            ->only(['index', 'show'])
+            ->only(['index', 'show', 'store'])
             ->parameters(['requesters' => 'requester']);
         Route::resource('uzovi', UzoviApiController::class)
             ->only(['index', 'show'])
