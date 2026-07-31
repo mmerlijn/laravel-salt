@@ -162,6 +162,7 @@ class Patient extends Model
     {
         return $this->belongsTo(Requester::class, 'last_requester', 'agbcode')->withTrashed()->withDefault([
             'initials' => '',
+            'vektis_name' => 'Niet bekend',
             'own_lastname' => 'Niet bekend',
             'agbcode' => '00000000',
         ]);
@@ -170,8 +171,9 @@ class Patient extends Model
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Requester::class, 'last_organization', 'agbcode')->withTrashed()->withDefault([
-            'name' => 'Niet bekend',
+            'vektis_name' => 'Niet bekend',
             'agbcode' => '00000000',
+            'own_lastname' => 'Niet bekend',
         ]);
 
     }
@@ -179,8 +181,9 @@ class Patient extends Model
     public function gp(): BelongsTo
     {
         return $this->belongsTo(Requester::class, 'general_practitioner', 'agbcode')->withTrashed()->withDefault([
-            'name' => 'Niet bekend',
+            'vektis_name' => 'Niet bekend',
             'agbcode' => '00000000',
+            'own_lastname' => 'Niet bekend',
         ]);
     }
 
