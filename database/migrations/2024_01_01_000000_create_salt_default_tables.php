@@ -203,10 +203,33 @@ return new class extends Migration {
             $table->index(['try_after', 'flow_error_id'], "flow_ready_index");
             $table->timestamps();
         });
-
+        Schema::create('flow_step_logs', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedSmallInteger('type');
+            $table->string('origin', 255)->nullable();
+            $table->boolean('active')->default(0);
+            $table->string('payload_type', 100)->nullable();
+            $table->unsignedBigInteger('payload_id')->nullable();
+            $table->json('stack');
+            $table->unsignedSmallInteger('attempts')->default(0);
+            $table->timestamp('try_after')->default(now());
+            $table->unsignedBigInteger('flow_error_id')->nullable();
+            $table->unsignedSmallInteger('request_type')->default(0);
+            $table->unsignedSmallInteger('response_type')->default(0);
+            $table->mediumText('request')->nullable();
+            $table->mediumText('response')->nullable();
+            $table->unsignedBigInteger('patient_id')->nullable();
+            $table->unsignedBigInteger('labtrain_id')->nullable();
+            $table->string('request_nr')->nullable();
+            $table->timestamp('request_at')->nullable()->default(now());
+            $table->timestamp('response_at')->nullable();
+            $table->json('data')->nullable();
+            $table->timestamps();
+        });
         Schema::create('flow_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedSmallInteger('type')->default(0);
+            $table->string('origin', 255)->nullable();
             $table->unsignedSmallInteger('attempts')->default(0);
             $table->timestamp('request_at')->nullable();
             $table->timestamp('response_at')->nullable();

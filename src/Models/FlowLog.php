@@ -33,6 +33,7 @@ class FlowLog extends Model
         'payload_id',
         'payload_type',
         'attempts',
+        'origin',
     ];
 
     protected function casts(): array

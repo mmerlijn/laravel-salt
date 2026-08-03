@@ -22,6 +22,7 @@ class FlowObserver
     {
         FlowLog::create([
             'type' => $flow->type,
+            'origin' => $flow->origin,
             'patient_id' => $flow->patient_id,
             'request_nr' => $flow->request_nr,
             'labtrain_id' => $flow->labtrain_id,

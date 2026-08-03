@@ -18,6 +18,7 @@ class FlowExamplePatientBsnJob extends TaskJob
             $this->flow->response_at = now();
             $this->flow->save();
             $this->flow->done(self::class);
+
         } catch (\Exception $e) {
             $this->flow->fail(
                 exception: $e,

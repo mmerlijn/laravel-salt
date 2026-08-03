@@ -3,8 +3,6 @@
 use mmerlijn\LaravelSalt\Jobs\FlowRunnerJob;
 use mmerlijn\LaravelSalt\Models\Flow;
 use mmerlijn\LaravelSalt\Models\FlowError;
-use mmerlijn\LaravelSalt\Models\FlowExchange;
-use mmerlijn\LaravelSalt\Models\FlowExchangeLog;
 use mmerlijn\LaravelSalt\Models\FlowLog;
 use mmerlijn\LaravelSalt\Models\Patient;
 use Workbench\App\Jobs\FlowExampleErrorJob;
@@ -31,13 +29,12 @@ it('Flows run with inserted requests', function () {
     config()->set('laravel_salt.flows.10', [991]);
     config()->set('laravel_salt.tasks.991', FlowExamplePatientBsnJob::class);
     $patient = Patient::factory()->create();
-    $f = Flow::factory()->payload($patient)->create([
-        'request' => 1000,
-        'type' => 10
-    ]);
+    $f = Flow::add(10, $patient);
+    $f->request = 1000;
+    $f->save();
 
     FlowRunnerJob::dispatchSync();
-    //dd(Flow::all(), AppError::all());
+    //dd(Flow::all());
     expect(Flow::all())->toBeEmpty()
         ->and(FlowLog::all()->toArray())->not->toBeEmpty();
 
@@ -49,10 +46,9 @@ it('stores an app error when task 2 fails', function () {
     config()->set('laravel_salt.tasks.992', FlowExampleErrorJob::class);
     config()->set('laravel_salt.flows.10', [991, 992, [400, 500], 300]);
     $patient = Patient::factory()->create();
-    $f = Flow::factory()->payload($patient)->create([
-        'request' => 1000,
-        'type' => 10
-    ]);
+    $f = Flow::add(10, $patient);
+    $f->request = 1000;
+    $f->save();
     expect(FlowError::count())->toBe(0);
     FlowRunnerJob::dispatchSync();
     //er treedt een fout op bij Task2 dus FlowExchange blijft bestaan
