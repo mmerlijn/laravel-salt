@@ -288,7 +288,11 @@ class Flow extends Model
         int|array  $skipTask = 0,
     ): void
     {
-        FlowStepLog::create(array_filter($this->toArray(), fn($k) => $k != 'id' && $k != 'created_at' && $k != 'updated_at', ARRAY_FILTER_USE_KEY));
+        try {
+            FlowStepLog::create(array_filter($this->withoutRelations()->toArray(), fn($k) => $k != 'id' && $k != 'created_at' && $k != 'updated_at', ARRAY_FILTER_USE_KEY));
+        } catch (\Exception|\Error $e) {
+            logger()->error($e->getMessage() . "\n" . $e->getTraceAsString());
+        }
         if (is_string($task)) {
             $task = array_find_key(config('laravel_salt.tasks', []), fn($item) => $item == $task);
         }
