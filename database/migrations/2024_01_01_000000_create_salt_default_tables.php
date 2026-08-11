@@ -163,6 +163,7 @@ return new class extends Migration {
         Schema::create('flow_errors', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('flow_id')->nullable();
+            $table->unsignedSmallInteger('code')->nullable();
             $table->unsignedTinyInteger('level')->default(1);
             $table->string('from_type')->nullable();
             $table->unsignedBigInteger('from_id')->nullable();

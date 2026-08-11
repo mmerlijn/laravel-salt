@@ -39,6 +39,7 @@ use Workbench\Database\Factories\FlowFactory;
  * @property int $labtrain_id
  * @property int $patient_id
  * @property string $request_nr
+ * @property Patient $patient
  */
 #[UseResource(FlowResource::class), ObservedBy(FlowObserver::class)]
 class Flow extends Model
@@ -92,6 +93,10 @@ class Flow extends Model
         return $this->belongsTo(FlowError::class, 'flow_error_id');
     }
 
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class, 'patient_id');
+    }
 
     public function payload(): MorphTo
     {
@@ -311,6 +316,12 @@ class Flow extends Model
             $this->run();
         }
 
+    }
+
+    public function doneDelete(int|string $task): void
+    {
+        $this->done(task: $task, wait: 2);
+        $this->delete();
     }
 
     public function resetRequest(): void

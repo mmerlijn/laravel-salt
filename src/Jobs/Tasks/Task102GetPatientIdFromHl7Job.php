@@ -21,14 +21,13 @@ class Task102GetPatientIdFromHl7Job extends TaskJob
             $this->flow->save();
             $this->flow->done(self::class);
         } catch (\Exception $e) {
-            $this->flow->fail(new Error(
-                level: ErrorLevelEnum::SYSTEEMBEHEER,
-                fromObject: $this->flow,
+            $this->flow->fail(
                 exception: $e,
                 solution: "Is het HL7 bericht geldig, kan geen patient uitlezen/aanmaken",
                 notify: true,
-                erroredClass: self::class,
-            )->store());
+                errorLevel: ErrorLevelEnum::SYSTEEMBEHEER,
+                errorClass: self::class,
+            );
         }
     }
 }
