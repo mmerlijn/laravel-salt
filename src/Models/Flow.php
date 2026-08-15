@@ -104,7 +104,7 @@ class Flow extends Model
         return $this->morphTo()->withTrashed();
     }
 
-    public static function add(int|BackedEnum $flow, null|Model $payload, $wait = 0, array $data = []): self
+    public static function add(int|BackedEnum $flow, null|Model $payload, $wait = 0, array $data = [], array $params = []): self
     {
         $stack = self::getStackFromConfig($flow?->value ?? $flow);
         if (!$stack) {
@@ -126,13 +126,14 @@ class Flow extends Model
                 'level' => ErrorLevelEnum::MENNO,
                 'from_type' => self::class,
                 'from_id' => $payload?->id ?? null,
-                'message' => "Flow $flow has no stack configured in laravel_salt.config",
+                'message' => "Flow $flow has no payload for initialization, origin is $origin",
                 'notify' => true,
             ]);
         }
         if ($payload) {
             $flow_model = Flow::whereType($flow?->value ?? $flow)->whereOrigin($origin)->first();
             if ($flow_model) {
+                //Ik twijfel nog of dit wil prettig is. Het zal de flow resetten en opnieuw proberen. Maar misschien wil je dat niet altijd.
                 $flow_model->try_after = now()->addMinutes($wait)->subSecond();
                 $flow_model->attempts = 0;
                 $flow_model->active = true;
@@ -149,7 +150,16 @@ class Flow extends Model
                 'attempts' => 0,
                 'flow_error_id' => $fe->id ?? null,
                 'active' => true,
-                'data' => $data
+                'data' => $data,
+                'request_type' => $params['request_type'] ?? 0,
+                'response_type' => $params['response_type'] ?? 0,
+                'request' => $params['request'] ?? null,
+                'response' => $params['response'] ?? null,
+                'request_at' => $params['request_at'] ?? null,
+                'response_at' => $params['response_at'] ?? null,
+                'patient_id' => $params['patient_id'] ?? null,
+                'request_nr' => $params['request_nr'] ?? null,
+                'labtrain_id' => $params['labtrain_id'] ?? null,
             ]);
 
         }
@@ -160,7 +170,16 @@ class Flow extends Model
             'flow_error_id' => $fe->id ?? null,
             'try_after' => now()->addMinutes($wait)->subSecond(),
             'active' => true,
-            'data' => $data
+            'data' => $data,
+            'request_type' => $params['request_type'] ?? 0,
+            'response_type' => $params['response_type'] ?? 0,
+            'request' => $params['request'] ?? null,
+            'response' => $params['response'] ?? null,
+            'request_at' => $params['request_at'] ?? null,
+            'response_at' => $params['response_at'] ?? null,
+            'patient_id' => $params['patient_id'] ?? null,
+            'request_nr' => $params['request_nr'] ?? null,
+            'labtrain_id' => $params['labtrain_id'] ?? null,
         ]);
     }
 
