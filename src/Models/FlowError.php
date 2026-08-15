@@ -53,6 +53,7 @@ class FlowError extends Model
         'at_id',
         'at_type',
         'flow_id',
+        'code',
     ];
     protected $table = 'flow_errors';
 

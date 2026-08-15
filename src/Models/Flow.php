@@ -40,6 +40,7 @@ use Workbench\Database\Factories\FlowFactory;
  * @property int $patient_id
  * @property string $request_nr
  * @property Patient $patient
+ * @property string $code
  */
 #[UseResource(FlowResource::class), ObservedBy(FlowObserver::class)]
 class Flow extends Model
@@ -67,7 +68,7 @@ class Flow extends Model
         'patient_id',
         'request_nr',
         'labtrain_id',
-        'active'
+        'active',
     ];
     protected $table = 'flows';
 
@@ -229,21 +230,19 @@ class Flow extends Model
         int                    $maxAttempts = 0,
         bool                   $reset = false,
         ?string                $solution = null,
-        bool                   $stopAtException = true,
         bool                   $notify = true,
         bool                   $resetResponse = false,
         bool                   $resetRequest = false,
         int|ErrorLevelEnum     $errorLevel = 1,
         ?Model                 $errorAt = null,
         ?string                $errorClass = null,
+        int                    $code = 0,
         ?\Closure              $action = null): void
     {
         $this->attempts += 1;
         $this->nextAttemptAt(wait: $wait);
-        if ($maxAttempts and $this->attempts > $maxAttempts) {
+        if ($maxAttempts == 0 or ($maxAttempts and $this->attempts > $maxAttempts)) {
             $exception = $exception ?? new \Exception("Maximum number of attempts reached");
-        }
-        if ($exception) {
             $flowError = FlowError::updateOrCreate([
                 'flow_id' => $this->id,
             ], [
@@ -257,10 +256,9 @@ class Flow extends Model
                 'message' => $exception->getMessage(),
                 'trace' => $exception->getTraceAsString(),
                 'notify' => $notify,
+                'code' => $code,
             ]);
-            if ($stopAtException) { //this stops de runner
-                $this->flow_error_id = $flowError->id;
-            }
+            $this->flow_error_id = $flowError->id;
         }
         if ($resetRequest) {
             $this->resetRequest();

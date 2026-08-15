@@ -202,6 +202,7 @@ return new class extends Migration {
             $table->timestamp('response_at')->nullable();
             $table->json('data')->nullable();
             $table->index(['try_after', 'flow_error_id'], "flow_ready_index");
+            $table->foreign('flow_error_id')->references('id')->on('flow_errors')->onDelete('set null');
             $table->timestamps();
         });
         Schema::create('flow_step_logs', function (Blueprint $table) {

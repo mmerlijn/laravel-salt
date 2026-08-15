@@ -33,6 +33,7 @@ class FlowResource extends JsonResource
             'request_nr' => $this->request_nr,
             'patient_id' => $this->patient_id,
             'labtrain_id' => $this->labtrain_id,
+            'code' => $this->code,
         ];
     }
 }
