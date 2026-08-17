@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use mmerlijn\LaravelSalt\Enums\ErrorLevelEnum;
@@ -63,6 +64,11 @@ class FlowError extends Model
             'notified' => 'array',
             'notify' => 'boolean',
         ];
+    }
+
+    public function flow(): HasOne
+    {
+        return $this->hasOne(Flow::class);
     }
 
     //Object where the problem is triggered from (eg. a model)

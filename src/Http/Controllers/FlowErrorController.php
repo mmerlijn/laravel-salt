@@ -13,7 +13,7 @@ class FlowErrorController extends Controller
 {
     public function index(Request $request)
     {
-        $query = FlowError::query()->with('flows');
+        $query = FlowError::query()->with('flow');
 
         if ($request->filled('level')) {
             $query->level((int)$request->integer('level'));

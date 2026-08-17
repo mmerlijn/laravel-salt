@@ -84,9 +84,9 @@ class Flow extends Model
         ];
     }
 
-    public function errors(): MorphMany
+    public function from(): MorphTo
     {
-        return $this->morphMany(FlowError::class, 'from');
+        return $this->morphTo('from')->withTrashed();
     }
 
     public function error(): BelongsTo

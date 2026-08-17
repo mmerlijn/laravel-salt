@@ -28,7 +28,7 @@ class FlowErrorResource extends JsonResource
             'trace' => $this->trace,
             'notify' => (bool)$this->notify,
             'notified' => $this->notified,
-            'flows' => FlowResource::collection($this->whenLoaded('flows')),
+            'flow' => FlowResource::make($this->whenLoaded('flow')),
             //'flow' => $this->flow->toResource(),
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'flow_id' => $this->flow_id,
