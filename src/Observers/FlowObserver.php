@@ -22,7 +22,6 @@ class FlowObserver
     {
         //more actions needed
         $flow->error?->delete();
-        $flow->errors()->delete();
     }
 
 }
