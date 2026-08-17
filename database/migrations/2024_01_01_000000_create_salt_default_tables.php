@@ -177,7 +177,7 @@ return new class extends Migration {
             $table->json('notified')->nullable(); //emails send to
             $table->index(['deleted_at', 'flow_id'], 'flow_error_ind');
             $table->timestamps();
-            $table->softDeletes();
+            //$table->softDeletes();
         });
 
         Schema::create('flows', function (Blueprint $table) {

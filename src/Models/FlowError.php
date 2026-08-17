@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use mmerlijn\LaravelSalt\Enums\ErrorLevelEnum;
 use mmerlijn\LaravelSalt\Http\Resources\FlowErrorResource;
 use mmerlijn\LaravelSalt\Observers\FlowErrorObserver;
@@ -37,7 +36,7 @@ use Workbench\Database\Factories\FlowErrorFactory;
 #[UseResource(FlowErrorResource::class), ObservedBy(FlowErrorObserver::class)]
 class FlowError extends Model
 {
-    use HasFactory, SoftDeletes, MassPrunable;
+    use HasFactory, MassPrunable;
 
     protected $fillable = [
         'from',
