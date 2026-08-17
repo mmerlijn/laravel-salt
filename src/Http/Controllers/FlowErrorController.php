@@ -15,8 +15,11 @@ class FlowErrorController extends Controller
     {
         $query = FlowError::query()->with('flow');
 
-        if ($request->filled('level')) {
-            $query = $query->level((int)$request->integer('level'));
+        if ($request->filled('level') and $request->leve > 0) {
+            $query = $query->whereLevel($request->level);
+        }
+        if ($request->filled('code') and $request->code > 0) {
+            $query = $query->whereCode($request->code);
         }
 
         if ($request->filled('message')) {
