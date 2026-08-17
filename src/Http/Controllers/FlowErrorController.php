@@ -16,20 +16,20 @@ class FlowErrorController extends Controller
         $query = FlowError::query()->with('flow');
 
         if ($request->filled('level')) {
-            $query->level((int)$request->integer('level'));
+            $query = $query->level((int)$request->integer('level'));
         }
 
+        if ($request->filled('message')) {
+            $query = $query->where('message', 'like', '%' . $request->message . '%');
+        }
         if ($request->filled('class')) {
-            $query->forClass((string)$request->string('class'));
+            $query = $query->where('class', 'like', '%' . $request->string('class') . '%');
         }
 
         if ($request->filled('notify')) {
-            $query->where('notify', filter_var($request->input('notify'), FILTER_VALIDATE_BOOL));
+            $query = $query->where('notify', filter_var($request->input('notify'), FILTER_VALIDATE_BOOL));
         }
 
-        if ($request->boolean('with_exception_class')) {
-            $query->withExceptionClass();
-        }
 
         return FlowErrorResource::collection(
             $query->latest('id')->paginate($request->integer('per_page', 15))

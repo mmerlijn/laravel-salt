@@ -67,6 +67,11 @@ class FlowController extends Controller
             'flow_error_id' => null,
         ];
         if ($request->filled('labtrain_id')) {
+            $request->validate([
+                'labtrain_id' => 'regex:/^7[0-9]{8}$/'
+            ], [
+                'labtrain_id.regex' => 'Het getal moet uit 9 cijfers bestaan en beginnen met een 7.',
+            ]);
             $update['labtrain_id'] = $request->labtrain_id;
         }
         if ($request->filled('request_nr')) {
