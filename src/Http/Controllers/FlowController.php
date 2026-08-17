@@ -40,6 +40,7 @@ class FlowController extends Controller
             'data' => FlowResource::make($flow->load('error'))->resolve(),
         ]);
     }
+
     public function showByType(Request $request): JsonResponse
     {
         return response()->json([
@@ -60,9 +61,21 @@ class FlowController extends Controller
 
     public function update(Request $request, Flow $flow): JsonResponse
     {
-        $flow->forceFill([
+        $flow->error->delete();
+        $update = [
             'try_after' => now(),
-        ])->save();
+            'flow_error_id' => null,
+        ];
+        if ($request->filled('labtrain_id')) {
+            $update['labtrain_id'] = $request->labtrain_id;
+        }
+        if ($request->filled('request_nr')) {
+            $update['request_nr'] = $request->request_nr;
+        }
+        if ($request->filled('request')) {
+            $update['request'] = $request->request;
+        }
+        $flow->update($update);
 
         return response()->json([
             'data' => FlowResource::make($flow->load('error'))->resolve(),
