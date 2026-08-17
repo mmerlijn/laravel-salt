@@ -4,10 +4,10 @@ namespace mmerlijn\LaravelSalt\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use mmerlijn\LaravelSalt\Models\Flow;
+use mmerlijn\LaravelSalt\Models\FlowStepLog;
 
-/** @mixin Flow */
-class FlowResource extends JsonResource
+/** @mixin FlowStepLog */
+class FlowStepLogResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
@@ -23,7 +23,6 @@ class FlowResource extends JsonResource
             'payload_id' => $this->payload_id,
             'payload' => $this->payload?->toResource(),
             'error' => $this->whenLoaded('error', fn() => $this->error->toResource()),
-            'patient' => $this->patient_id ? $this->patient?->toResource() : null,
             'response' => $this->response,
             'request' => $this->request,
             'response_at' => $this->response_at,

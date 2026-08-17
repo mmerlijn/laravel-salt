@@ -20,7 +20,13 @@ class FlowController extends Controller
         }
 
         if ($request->filled('type')) {
-            $query->where('type', $request->integer('type'));
+            $query->where('from_type', $request->type);
+        }
+        if ($request->filled('type_id')) {
+            $query->where('from_id', $request->integer('type_id'));
+        }
+        if ($request->filled('id')) {
+            $query->where('id', $request->integer('id'));
         }
 
         return FlowResource::collection(
@@ -32,6 +38,16 @@ class FlowController extends Controller
     {
         return response()->json([
             'data' => FlowResource::make($flow->load('error'))->resolve(),
+        ]);
+    }
+    public function showByType(Request $request): JsonResponse
+    {
+        return response()->json([
+            'data' => FlowResource::make(
+                Flow::whereFromType($request->from_type)
+                    ->whereFromId($request->from_id)
+                    ->load('error')->first()
+            )->resolve(),
         ]);
     }
 

@@ -33,6 +33,7 @@ Route::prefix('api')
         Route::resource('flows', FlowController::class)
             ->only(['index', 'show', 'edit', 'update', 'destroy'])
             ->parameters(['flows' => 'flow']);
+        Route::get('flows-by-type', [FlowController::class, 'showByType'])->name('flows.showByType');
         Route::resource('requesters', RequesterApiController::class)
             ->only(['index', 'show', 'store'])
             ->parameters(['requesters' => 'requester']);

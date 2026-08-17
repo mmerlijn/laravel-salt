@@ -228,20 +228,6 @@ return new class extends Migration {
             $table->json('data')->nullable();
             $table->timestamps();
         });
-        Schema::create('flow_logs', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedSmallInteger('type')->default(0);
-            $table->string('origin', 255)->nullable();
-            $table->unsignedSmallInteger('attempts')->default(0);
-            $table->timestamp('request_at')->nullable();
-            $table->timestamp('response_at')->nullable();
-            $table->string('payload_type', 100)->nullable();
-            $table->unsignedBigInteger('payload_id')->nullable();
-            $table->unsignedBigInteger('patient_id')->nullable();
-            $table->unsignedBigInteger('labtrain_id')->nullable();
-            $table->string('request_nr')->nullable();
-            $table->timestamps();
-        });
     }
 
     /**

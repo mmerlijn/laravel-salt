@@ -14,6 +14,7 @@ class FlowErrorResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'code' => $this->code,
             'level' => $this->level,
             'from_type' => $this->from_type,
             'from_id' => $this->from_id,
@@ -29,6 +30,8 @@ class FlowErrorResource extends JsonResource
             'notified' => $this->notified,
             'flows' => FlowResource::collection($this->whenLoaded('flows')),
             //'flow' => $this->flow->toResource(),
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
+            'flow_id' => $this->flow_id,
         ];
     }
 }

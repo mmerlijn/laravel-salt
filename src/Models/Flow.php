@@ -104,6 +104,13 @@ class Flow extends Model
         return $this->morphTo()->withTrashed();
     }
 
+    public static function addAndRun(int|BackedEnum $flow, null|Model $payload, $wait = 0, array $data = [], array $params = []): self
+    {
+        $flow = self::add($flow, $payload, $wait, $data, $params);
+        $flow->run();
+        return $flow;
+    }
+
     public static function add(int|BackedEnum $flow, null|Model $payload, $wait = 0, array $data = [], array $params = []): self
     {
         $stack = self::getStackFromConfig($flow?->value ?? $flow);
