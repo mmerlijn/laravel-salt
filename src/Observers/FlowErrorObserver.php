@@ -33,6 +33,6 @@ class FlowErrorObserver
     public function deleted(FlowError $FlowError): void
     {
         //more actions needed
-        $FlowError->flows()?->update(['flow_error_id' => null]);
+        $FlowError->flow()?->update(['flow_error_id' => null]);
     }
 }
