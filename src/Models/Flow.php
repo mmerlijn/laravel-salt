@@ -152,7 +152,7 @@ class Flow extends Model
                 'payload_type' => $payload->getMorphClass(),
                 'type' => $flow?->value ?? $flow,
                 'stack' => $stack,
-                'try_after' => now()->addMinutes($wait)->subSecond(),
+                'try_after' => now()->addMinutes($wait ?: 1),
                 'attempts' => 0,
                 'flow_error_id' => $fe->id ?? null,
                 'active' => true,

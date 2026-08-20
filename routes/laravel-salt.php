@@ -14,7 +14,7 @@ use mmerlijn\LaravelSalt\Models\Flow;
 use mmerlijn\LaravelSalt\Models\FlowError;
 
 Route::bind('flowError', function ($value) {
-    return FlowError::withTrashed()->findOrFail($value);
+    return FlowError::query()->findOrFail($value);
 });
 
 Route::bind('flow', function ($value) {
