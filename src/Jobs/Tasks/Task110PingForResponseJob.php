@@ -11,7 +11,9 @@ class Task110PingForResponseJob extends TaskJob
             $this->flow->done(self::class); //volgende stap
             return;
         }
-        $this->flow->fail(); //gaat later opnieuw kijken
+        $this->flow->fail(
+            maxAttempts: 2000,
+        ); //gaat later opnieuw kijken
 
     }
 
