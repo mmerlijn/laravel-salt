@@ -22,7 +22,7 @@ class FlowErrorResource extends JsonResource
             'at_id' => $this->at_id,
             'from' => $this->from?->toResource(),
             'at' => $this->at?->toResource(),
-            'class' => str($this->class)->after('\\')->toString(),
+            'class' => str($this->class)->afterLast('\\')->toString(),
             'solution' => $this->solution,
             'message' => $this->message,
             'trace' => $this->trace,
