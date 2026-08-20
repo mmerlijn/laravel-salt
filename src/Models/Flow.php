@@ -396,7 +396,12 @@ class Flow extends Model
             $this->try_after = now()->addMinutes($this->attempts);
         }
         // exponentieel backoff na 10 tries, elke 1.5x langer wachten dan de vorige keer
-        $this->try_after = now()->addMinutes((int)(10 * 1.5 ** ($this->attempts - 10)));
+        // met een maximum van 6 uur (360 minuten)
+        $add = (int)(10 * 1.5 ** ($this->attempts - 10));
+        if ($add > 360) {
+            $add = 360;
+        }
+        $this->try_after = now()->addMinutes($add);
     }
 
     private function filter_first_integer_recursive(array $array, int $target, bool &$found = false): array
