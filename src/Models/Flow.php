@@ -394,6 +394,7 @@ class Flow extends Model
         }
         if ($this->attempts <= 10) {
             $this->try_after = now()->addMinutes($this->attempts);
+            return;
         }
         // exponentieel backoff na 10 tries, elke 1.5x langer wachten dan de vorige keer
         // met een maximum van 6 uur (360 minuten)
