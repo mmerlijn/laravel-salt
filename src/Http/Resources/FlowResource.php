@@ -14,6 +14,7 @@ class FlowResource extends JsonResource
         return [
             'id' => $this->id,
             'type' => $this->type?->value ?? $this->type,
+            'origin' => $this->origin,
             'active' => $this->active,
             'stack' => $this->stack,
             'attempts' => $this->attempts,
@@ -34,6 +35,7 @@ class FlowResource extends JsonResource
             'request_nr' => $this->request_nr,
             'patient_id' => $this->patient_id,
             'labtrain_id' => $this->labtrain_id,
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }
 }

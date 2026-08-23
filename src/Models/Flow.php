@@ -471,6 +471,34 @@ class Flow extends Model
         $this->save();
     }
 
+
+    public function scopeFilter($query, array $filter)
+    {
+        $query = $query->with(['patient']);
+        // if ($filter['location'] ?? false and $filter['location'] != FunctieLocationEnum::_->value) {
+        //    $query->where('location', FunctieLocationEnum::from($filter['location']));
+        // }
+
+        if ($filter['request_nr'] ?? false) {
+            $query = $query->where('request_nr', 'like', $filter['request_nr'] . '%');
+        }
+        if ($filter['labtrain_id'] ?? false) {
+            $query = $query->whereHas('patient', fn($q) => $q->where('labtrain_id', $filter['labtrain_id']));
+        }
+        if ($filter['bsn'] ?? false) {
+            $query = $query->whereHas('patient', fn($q) => $q->where('bsn', $filter['bsn']));
+        }
+        if ($filter['dob'] ?? false) {
+            $query = $query->whereHas('patient', fn($q) => $q->whereDate('dob', $filter['dob']));
+        }
+        if ($filter['name'] ?? false) {
+            $query = $query->whereHas('patient', fn($q) => $q->where('lastname', 'like', $filter['name'] . '%')->orWhere('own_lastname', 'like', $filter['name'] . '%'));
+        }
+
+        return $query;
+
+    }
+
     protected static function newFactory(): FlowFactory
     {
         return FlowFactory::new();
