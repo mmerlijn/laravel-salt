@@ -139,11 +139,11 @@ class Flow extends Model
         if ($payload) {
             $flow_model = Flow::whereType($flow?->value ?? $flow)->whereOrigin($origin)->first();
             if ($flow_model) {
-                //Ik twijfel nog of dit wil prettig is. Het zal de flow resetten en opnieuw proberen. Maar misschien wil je dat niet altijd.
-                $flow_model->try_after = now()->addMinutes($wait)->subSecond();
-                $flow_model->attempts = 0;
-                $flow_model->active = true;
-                $flow_model->save();
+                ////Ik twijfel nog of dit wil prettig is. Het zal de flow resetten en opnieuw proberen. Maar misschien wil je dat niet altijd.
+                //$flow_model->try_after = now()->addMinutes($wait)->subSecond();
+                //$flow_model->attempts = 0;
+                //$flow_model->active = true;
+                //$flow_model->save();
                 return $flow_model;
             }
             return Flow::create([
