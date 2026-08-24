@@ -39,21 +39,21 @@ class FlowErrorController extends Controller
         );
     }
 
-    public function show(Request $request, FlowError $FlowError): JsonResponse
+    public function show(Request $request, FlowError $flowError): JsonResponse
     {
         return response()->json([
-            'data' => $FlowError->toResource(),
+            'data' => $flowError->toResource(),
         ]);
     }
 
-    public function edit(Request $request, FlowError $FlowError): JsonResponse
+    public function edit(Request $request, FlowError $flowError): JsonResponse
     {
         return response()->json([
-            'data' => $FlowError->toResource(),
+            'data' => $flowError->toResource(),
         ]);
     }
 
-    public function update(Request $request, FlowError $FlowError): JsonResponse
+    public function update(Request $request, FlowError $flowError): JsonResponse
     {
         $data = $request->validate([
             'level' => ['sometimes', 'integer', 'min:1'],
@@ -68,22 +68,22 @@ class FlowErrorController extends Controller
 
         $data['notify'] = array_key_exists('notify', $data)
             ? (bool)$data['notify']
-            : (bool)$FlowError->notify;
+            : (bool)$flowError->notify;
 
-        $data['notified'] = $data['notified'] ?? ($FlowError->notified ?? []);
+        $data['notified'] = $data['notified'] ?? ($flowError->notified ?? []);
 
-        $FlowError->update($data);
+        $flowError->update($data);
 
-        $FlowError->refresh();
+        $flowError->refresh();
 
         return response()->json([
-            'data' => $FlowError->toResource(),
+            'data' => $flowError->toResource(),
         ]);
     }
 
-    public function destroy(FlowError $FlowError): Response
+    public function destroy(FlowError $flowError): Response
     {
-        $FlowError->delete();
+        $flowError->delete();
         return response()->noContent();
     }
 
