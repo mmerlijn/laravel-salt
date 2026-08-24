@@ -93,4 +93,13 @@ class FlowController extends Controller
 
         return response()->noContent();
     }
+
+    public function destroyPayload(Flow $flow): Response
+    {
+        $flow->payload->delete();
+        $flow->error->delete();
+        $flow->delete();
+
+        return response()->noContent();
+    }
 }
