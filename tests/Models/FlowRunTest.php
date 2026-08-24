@@ -1,6 +1,6 @@
 <?php
 
-use mmerlijn\LaravelSalt\Jobs\FlowRunnerJob;
+use mmerlijn\LaravelSalt\Jobs\ClearNonRelatedFlowErrorsJob;
 use mmerlijn\LaravelSalt\Models\Flow;
 use mmerlijn\LaravelSalt\Models\FlowError;
 use mmerlijn\LaravelSalt\Models\FlowLog;
@@ -15,7 +15,7 @@ it('requests from flow-exchange are put to Flow after inserted', function () {
         'request' => 1000,
         'type' => 992
     ]);
-    FlowRunnerJob::dispatchSync();
+    ClearNonRelatedFlowErrorsJob::dispatchSync();
 
 
     $f->refresh();
@@ -33,7 +33,7 @@ it('Flows run with inserted requests', function () {
     $f->request = 1000;
     $f->save();
 
-    FlowRunnerJob::dispatchSync();
+    ClearNonRelatedFlowErrorsJob::dispatchSync();
     //dd(Flow::all());
     expect(Flow::all())->toBeEmpty()
         ->and(FlowLog::all()->toArray())->not->toBeEmpty();
@@ -50,7 +50,7 @@ it('stores an app error when task 2 fails', function () {
     $f->request = 1000;
     $f->save();
     expect(FlowError::count())->toBe(0);
-    FlowRunnerJob::dispatchSync();
+    ClearNonRelatedFlowErrorsJob::dispatchSync();
     //er treedt een fout op bij Task2 dus FlowExchange blijft bestaan
     expect(Flow::all())->count()->toBe(1)
         ->and(FlowError::count())->toBe(1);

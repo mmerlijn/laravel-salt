@@ -18,7 +18,7 @@ it('Can find request_nr from HL7 or return null', function (string $hl7, ?string
         'request' => $hl7,
         'request_at' => now(),
     ]);
-    \mmerlijn\LaravelSalt\Jobs\FlowRunnerJob::dispatchSync();
+    \mmerlijn\LaravelSalt\Jobs\ClearNonRelatedFlowErrorsJob::dispatchSync();
 
     $flowError = \mmerlijn\LaravelSalt\Models\FlowError::first();
     if ($flowError) {

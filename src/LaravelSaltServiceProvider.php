@@ -9,6 +9,7 @@ use mmerlijn\LaravelSalt\Helpers\Distance;
 use mmerlijn\LaravelSalt\Helpers\TimeArray;
 use mmerlijn\LaravelSalt\Helpers\Toast;
 use mmerlijn\LaravelSalt\Helpers\ToastInterface;
+use mmerlijn\LaravelSalt\Jobs\ClearNonRelatedFlowErrorsJob;
 use mmerlijn\LaravelSalt\Jobs\FlowRunnerJob;
 use mmerlijn\LaravelSalt\Jobs\PruneLocks;
 use mmerlijn\LaravelSalt\Jobs\QueueHeartBeatJob;
@@ -80,7 +81,8 @@ class LaravelSaltServiceProvider extends ServiceProvider
                 //Luisteren naar binnenkomende berichten
                 //$schedule->job(new ListenForExchangesJob)->everyMinute();
                 // Uitvoeren van FlowTasks
-                $schedule->job(new FlowRunnerJob)->everyMinute();
+                $schedule->job(new FlowRunnerJob())->everyMinute();
+                $schedule->job(new ClearNonRelatedFlowErrorsJob)->hourly();
                 // Opschonen van de locks
                 $schedule->job(new PruneLocks, 'low')->everyMinute();
 
