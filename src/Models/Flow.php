@@ -317,6 +317,9 @@ class Flow extends Model
     ): void
     {
         try {
+            if (is_string($task)) {
+                $task = array_find_key(config('laravel_salt.tasks', []), fn($item) => $item == $task);
+            }
             FlowStepLog::create([...array_filter($this->withoutRelations()->toArray(),
                 fn($k) => $k != 'id' && $k != 'created_at' && $k != 'updated_at', ARRAY_FILTER_USE_KEY),
                 ...[
@@ -327,9 +330,7 @@ class Flow extends Model
         } catch (\Exception|\Error $e) {
             logger()->error($e->getMessage() . "\n" . $e->getTraceAsString());
         }
-        if (is_string($task)) {
-            $task = array_find_key(config('laravel_salt.tasks', []), fn($item) => $item == $task);
-        }
+
         //remove task from stack
         $this->stack = $this->filter_first_integer_recursive($this->stack, $task);
 
