@@ -455,7 +455,7 @@ class Flow extends Model
     private static function getStackFromConfig(int $flow): ?array
     {
         $stack = config('laravel_salt.flows.' . ($flow?->value ?? $flow), false);
-        if (is_int($stack[0])) {
+        if (is_int($stack[0] ?? false)) {
             return $stack;
         } else {
             if (is_int($stack[0][0] ?? false)) {
