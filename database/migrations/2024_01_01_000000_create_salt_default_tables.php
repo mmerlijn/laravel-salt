@@ -207,6 +207,8 @@ return new class extends Migration {
         });
         Schema::create('flow_step_logs', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('flow_id')->nullable();
+            $table->unsignedSmallInteger('task')->nullable();
             $table->unsignedSmallInteger('type');
             $table->string('origin', 255)->nullable();
             $table->boolean('active')->default(0);
@@ -226,6 +228,8 @@ return new class extends Migration {
             $table->timestamp('request_at')->nullable()->default(now());
             $table->timestamp('response_at')->nullable();
             $table->json('data')->nullable();
+
+
             $table->timestamps();
         });
     }

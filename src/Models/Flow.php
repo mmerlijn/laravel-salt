@@ -317,7 +317,13 @@ class Flow extends Model
     ): void
     {
         try {
-            FlowStepLog::create(array_filter($this->withoutRelations()->toArray(), fn($k) => $k != 'id' && $k != 'created_at' && $k != 'updated_at', ARRAY_FILTER_USE_KEY));
+            FlowStepLog::create([...array_filter($this->withoutRelations()->toArray(),
+                fn($k) => $k != 'id' && $k != 'created_at' && $k != 'updated_at', ARRAY_FILTER_USE_KEY),
+                ...[
+                    'flow_id' => $this->id,
+                    'task' => $task,
+                ]
+            ]);
         } catch (\Exception|\Error $e) {
             logger()->error($e->getMessage() . "\n" . $e->getTraceAsString());
         }

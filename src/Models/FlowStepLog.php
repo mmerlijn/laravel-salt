@@ -3,6 +3,8 @@
 namespace mmerlijn\LaravelSalt\Models;
 
 use Illuminate\Database\Eloquent\Attributes\UseResource;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
@@ -31,10 +33,14 @@ use mmerlijn\LaravelSalt\Http\Resources\FlowStepLogResource;
  * @property int $labtrain_id
  * @property int $patient_id
  * @property string $request_nr
+ * @property int $task
+ * @property int $flow_id
+ * @property int $id
  */
 #[UseResource(FlowStepLogResource::class)]
 class FlowStepLog extends Model
 {
+    use MassPrunable;
 
     protected $fillable = [
         'type',
@@ -57,7 +63,9 @@ class FlowStepLog extends Model
         'patient_id',
         'request_nr',
         'labtrain_id',
-        'active'
+        'active',
+        'task',
+        'flow_id',
     ];
     protected $table = 'flow_step_logs';
 
@@ -79,4 +87,11 @@ class FlowStepLog extends Model
         return $this->morphTo()->withTrashed();
     }
 
+    /**
+     * Define the prunable query for the model.
+     */
+    public function prunable(): Builder
+    {
+        return static::where('created_at', '<=', Carbon::now()->subWeek());
+    }
 }

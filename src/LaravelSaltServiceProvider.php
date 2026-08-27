@@ -15,6 +15,7 @@ use mmerlijn\LaravelSalt\Jobs\PruneLocks;
 use mmerlijn\LaravelSalt\Jobs\QueueHeartBeatJob;
 use mmerlijn\LaravelSalt\Models\Flow;
 use mmerlijn\LaravelSalt\Models\FlowError;
+use mmerlijn\LaravelSalt\Models\FlowStepLog;
 use mmerlijn\LaravelSalt\Models\Requester;
 
 class LaravelSaltServiceProvider extends ServiceProvider
@@ -87,6 +88,11 @@ class LaravelSaltServiceProvider extends ServiceProvider
                 $schedule->job(new PruneLocks, 'low')->everyMinute();
 
                 $schedule->job(new QueueHeartBeatJob)->everyMinute();
+
+                $schedule->command('model:prune', [
+                    '--model' => [FlowStepLog::class],
+                ])->daily();
+
             });
 
         }
