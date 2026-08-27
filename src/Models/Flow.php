@@ -368,6 +368,7 @@ class Flow extends Model
         $this->resetRequest();
         $this->attempts = 0;
         $this->nextAttemptAt(wait: $wait);
+        $this->save();
     }
 
 
