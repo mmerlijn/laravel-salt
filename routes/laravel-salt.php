@@ -39,9 +39,9 @@ Route::prefix('api')
         Route::resource('requesters', RequesterApiController::class)
             ->only(['index', 'show', 'store'])
             ->parameters(['requesters' => 'requester']);
-        Route::resource('care-groups', CareGroupApiController::class
+        Route::resource('care-groups', CareGroupApiController::class)
             ->only(['index', 'show'])
-            ->parameters(['care-groups' => 'careGroup']));
+            ->parameters(['care-groups' => 'careGroup']);
         Route::put('care-groups/attach-requester', [CareGroupApiController::class, 'attachRequester'])->name('care-groups.attach-requester');
         Route::delete('care-groups/detach-requester', [CareGroupApiController::class, 'detachRequester'])->name('care-groups.detach-requester');
         Route::resource('uzovi', UzoviApiController::class)
