@@ -3,14 +3,17 @@
 namespace mmerlijn\LaravelSalt\Models;
 
 
+use Illuminate\Database\Eloquent\Attributes\UseResource;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use mmerlijn\LaravelSalt\Enums\CareGroupEnum;
 use mmerlijn\LaravelSalt\Enums\TestTypeEnum;
+use mmerlijn\LaravelSalt\Http\Resources\CareGroupResource;
 use Workbench\Database\Factories\CareGroupFactory;
 
+#[UseResource(CareGroupResource::class)]
 class CareGroup extends Model
 {
     use HasFactory;
@@ -25,6 +28,11 @@ class CareGroup extends Model
 
 
     public function caregiver(): BelongsTo
+    {
+        return $this->belongsTo(\mmerlijn\LaravelSalt\Models\Requester::class, 'agbcode', 'agbcode')->withTrashed();
+    }
+
+    public function requester(): BelongsTo
     {
         return $this->belongsTo(\mmerlijn\LaravelSalt\Models\Requester::class, 'agbcode', 'agbcode')->withTrashed();
     }
@@ -58,5 +66,20 @@ class CareGroup extends Model
         }
         return CareGroupEnum::_;
 
+    }
+
+    //use for RequesterAPI
+    public function scopeFilter($query, array $filter)
+    {
+        if ($filter['test_type'] ?? false) {
+            $query->where('test_type', $filter['test_type']);
+        }
+        if ($filter['agbcode'] ?? false) {
+            $query->where('agbcode', $filter['agbcode']);
+        }
+        if ($filter['care_group'] ?? false) {
+            $query->where('care_group', $filter['care_group']);
+        }
+        return $query;
     }
 }

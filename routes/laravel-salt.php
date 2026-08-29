@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use mmerlijn\LaravelSalt\Http\Controllers\CareGroupApiController;
 use mmerlijn\LaravelSalt\Http\Controllers\EnumApiController;
 use mmerlijn\LaravelSalt\Http\Controllers\FlowController;
 use mmerlijn\LaravelSalt\Http\Controllers\FlowErrorController;
@@ -38,6 +39,11 @@ Route::prefix('api')
         Route::resource('requesters', RequesterApiController::class)
             ->only(['index', 'show', 'store'])
             ->parameters(['requesters' => 'requester']);
+        Route::resource('care-groups', CareGroupApiController::class
+            ->only(['index', 'show'])
+            ->parameters(['care-groups' => 'careGroup']));
+        Route::put('care-groups/attach-requester', [CareGroupApiController::class, 'attachRequester'])->name('care-groups.attach-requester');
+        Route::delete('care-groups/detach-requester', [CareGroupApiController::class, 'detachRequester'])->name('care-groups.detach-requester');
         Route::resource('uzovi', UzoviApiController::class)
             ->only(['index', 'show'])
             ->parameters(['uzovi' => 'uzovi']);
