@@ -16,11 +16,10 @@ class CareGroupApiController
         $careGroups = CareGroup::filter($request->toArray())->with(['requester'])
             ->orderBy('test_type')
             ->orderBy('care_group');
-        return response()->json(
+        return
             $careGroups->simplePaginate($request->integer('per_page', 30))
                 ->withQueryString()
-                ->toResourceCollection()
-        );
+                ->toResourceCollection();
     }
 
     public function attachRequester(Request $request)
