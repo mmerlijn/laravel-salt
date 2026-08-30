@@ -15,8 +15,8 @@ class CareGroupResource extends JsonResource
             'id' => $this->id,
             'agbcode' => $this->agbcode,
             'requester_type' => $this->requester_type,
-            'care_group' => $this->care_group->value,
-            'test_type' => $this->test_type->value,
+            'care_group' => $this->care_group,
+            'test_type' => $this->test_type,
             'requester' => $this->requester->toResource(),
         ];
     }
