@@ -80,6 +80,16 @@ class CareGroup extends Model
         if ($filter['care_group'] ?? false) {
             $query->where('care_group', $filter['care_group']);
         }
+        if($filter['requester_type'] ?? false){
+            $query->whereHas('requester', fn($q) =>
+                $q->where('type', $filter['requester_type'])
+            );
+        }
+        //if($filter['requester_name'] ?? false){
+            $query->whereHas('requester', fn($q) =>
+            $q->where('vektis_name','like', '%'.($filter['requester_name']??"")."%'")
+            );
+        //}
         return $query;
     }
 }
