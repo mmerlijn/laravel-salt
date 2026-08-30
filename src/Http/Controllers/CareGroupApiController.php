@@ -18,6 +18,7 @@ class CareGroupApiController
             ->orderBy('care_group');
         return response()->json(
             $careGroups->simplePaginate($request->integer('per_page', 30))
+                ->withQueryString()
                 ->toResourceCollection()
         );
     }
