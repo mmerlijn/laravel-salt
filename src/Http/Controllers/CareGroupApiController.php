@@ -15,9 +15,7 @@ class CareGroupApiController
     {
         $careGroups = CareGroup::filter($request->toArray())->with(['requester'])
             ->orderBy('test_type')
-            ->orderBy('care_group')
-            ->orderBy('requester.postcode')
-            ->orderBy('requester.own_lastname');
+            ->orderBy('care_group');
         return response()->json(
             $careGroups->simplePaginate($request->integer('per_page', 30))
                 ->toResourceCollection()
