@@ -65,6 +65,15 @@ class CareGroupApiController
             ->where('care_group', $request->input('care_group'))
             ->where('test_type', $request->input('test_type'))
             ->delete();
+        $requester = Requester::where('agbcode', $request->input('agbcode'))->first();
+        if ($requester->type == 'onderneming') {
+            foreach ($requester->members as $member) {
+                CareGroup::where('agbcode', $member->agbcode)
+                    ->where('care_group', $request->input('care_group'))
+                    ->where('test_type', $request->input('test_type'))
+                    ->delete();
+            }
+        }
         return response()->json(['message' => 'Requester detached successfully']);
     }
 }
