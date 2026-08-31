@@ -31,7 +31,7 @@ class CareGroupApiController
             'test_type' => ['required', Rule::enum(TestTypeEnum::class)],
         ]);
         $requester = Requester::where('agbcode', $request->input('agbcode'))->first();
-        $careGroup = CareGroup::firstOrNew(
+        $careGroup = CareGroup::firstOrCreate(
             [
                 'agbcode' => $request->input('agbcode'),
                 'care_group' => $request->input('care_group'),
@@ -39,7 +39,7 @@ class CareGroupApiController
             ]);
         if ($requester->type == 'onderneming') {
             foreach ($requester->members as $member) {
-                CareGroup::firstOrNew(
+                CareGroup::firstOrCreate(
                     [
                         'agbcode' => $member->agbcode,
                         'care_group' => $request->input('care_group'),
