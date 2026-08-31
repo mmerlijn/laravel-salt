@@ -88,6 +88,10 @@ class CareGroup extends Model
             $query->whereHas('requester', fn($q) => $q->where('vektis_name', 'like', '%' . ($filter['requester_name'] ?? "") . "%")
             );
         }
+        if ($filter['requester_postcode'] ?? false) {
+            $query->whereHas('requester', fn($q) => $q->where('postcode', $filter['requester_postcode'] ?? "")
+            );
+        }
         return $query;
     }
 }

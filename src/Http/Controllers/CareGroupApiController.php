@@ -31,7 +31,7 @@ class CareGroupApiController
             'test_type' => ['required', Rule::enum(TestTypeEnum::class)],
         ]);
         $requester = Requester::where('agbcode', $request->input('agbcode'))->first();
-        CareGroup::firstOrNew(
+        $careGroup = CareGroup::firstOrNew(
             [
                 'agbcode' => $request->input('agbcode'),
                 'care_group' => $request->input('care_group'),
@@ -47,7 +47,11 @@ class CareGroupApiController
                     ]);
             }
         }
-        return response()->json(['message' => 'Requester attached successfully']);
+        if ($careGroup) {
+            return response()->json(['message' => 'Requester attached successfully']);
+        } else {
+            return response()->json(['message' => 'Failed to attach requester'], 500);
+        }
     }
 
     public function detachRequester(Request $request)
