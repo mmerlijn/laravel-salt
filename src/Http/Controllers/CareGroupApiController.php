@@ -8,6 +8,7 @@ use mmerlijn\LaravelSalt\Enums\CareGroupEnum;
 use mmerlijn\LaravelSalt\Enums\TestTypeEnum;
 use mmerlijn\LaravelSalt\Models\CareGroup;
 use mmerlijn\LaravelSalt\Models\Requester;
+use mmerlijn\msgRepo\Enums\VektisType;
 
 
 class CareGroupApiController
@@ -37,7 +38,7 @@ class CareGroupApiController
                 'care_group' => $request->input('care_group'),
                 'test_type' => $request->input('test_type'),
             ]);
-        if ($requester->type == 'onderneming') {
+        if ($requester->type == VektisType::ONDERNEMING) {
             foreach ($requester->members as $member) {
                 CareGroup::firstOrCreate(
                     [
@@ -66,7 +67,7 @@ class CareGroupApiController
             ->where('test_type', $request->input('test_type'))
             ->delete();
         $requester = Requester::where('agbcode', $request->input('agbcode'))->first();
-        if ($requester->type == 'onderneming') {
+        if ($requester->type == VektisType::ONDERNEMING) {
             foreach ($requester->members as $member) {
                 CareGroup::where('agbcode', $member->agbcode)
                     ->where('care_group', $request->input('care_group'))
