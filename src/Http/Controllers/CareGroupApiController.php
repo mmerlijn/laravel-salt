@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 use mmerlijn\LaravelSalt\Enums\CareGroupEnum;
 use mmerlijn\LaravelSalt\Enums\TestTypeEnum;
 use mmerlijn\LaravelSalt\Models\CareGroup;
+use mmerlijn\LaravelSalt\Models\Requester;
 
 
 class CareGroupApiController
@@ -29,12 +30,23 @@ class CareGroupApiController
             'agbcode' => ['required', 'exists:requesters,agbcode'],
             'test_type' => ['required', Rule::enum(TestTypeEnum::class)],
         ]);
-        $careGroup = CareGroup::firstOrNew(
+        $requester = Requester::where('agbcode', $request->input('agbcode'))->first();
+        CareGroup::firstOrNew(
             [
                 'agbcode' => $request->input('agbcode'),
                 'care_group' => $request->input('care_group'),
                 'test_type' => $request->input('test_type'),
             ]);
+        if ($requester->type == 'onderneming') {
+            foreach ($requester->members as $member) {
+                CareGroup::firstOrNew(
+                    [
+                        'agbcode' => $member->agbcode,
+                        'care_group' => $request->input('care_group'),
+                        'test_type' => $request->input('test_type'),
+                    ]);
+            }
+        }
         return response()->json(['message' => 'Requester attached successfully']);
     }
 
