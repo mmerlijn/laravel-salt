@@ -127,14 +127,14 @@ class Flow extends Model
         } elseif (!empty($data)) {
             $origin = md5(serialize($data)) . ($data['id'] ?? '');
         } else {
-            $origin = "ERROR" . date('Y-m-d H:i:s');
-            $fe = FlowError::create([
-                'level' => ErrorLevelEnum::MENNO,
-                'from_type' => self::class,
-                'from_id' => $payload?->id ?? null,
-                'message' => "Flow $flow has no payload for initialization, origin is $origin",
-                'notify' => true,
-            ]);
+            $origin = "flow-" . ($flow?->value ?? $flow) . "-" . date('Ymd_Hi');
+//            $fe = FlowError::create([
+//                'level' => ErrorLevelEnum::MENNO,
+//                'from_type' => self::class,
+//                'from_id' => $payload?->id ?? null,
+//                'message' => "Flow $flow has no payload for initialization, origin is $origin",
+//                'notify' => true,
+//            ]);
         }
         if ($payload) {
             $flow_model = Flow::whereType($flow?->value ?? $flow)->whereOrigin($origin)->first();

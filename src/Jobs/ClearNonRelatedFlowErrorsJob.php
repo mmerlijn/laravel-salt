@@ -8,19 +8,18 @@ use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\MaxExceptions;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\Attributes\UniqueFor;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use mmerlijn\LaravelSalt\Models\FlowError;
 
-#[UniqueFor(45)]
+#[UniqueFor(45), Tries(0), MaxExceptions(0)]
 class ClearNonRelatedFlowErrorsJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public int $tries = 0;
-    public int $maxExceptions = 0;
 
     public function uniqueVia(): Repository
     {
