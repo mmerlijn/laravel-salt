@@ -28,6 +28,9 @@ class FlowErrorController extends Controller
         if ($request->filled('class')) {
             $query = $query->where('class', 'like', '%' . $request->string('class') . '%');
         }
+        if ($request->filled('identifier')) {
+            $query = $query->whereHas('flow', fn($q) => $q->whereAny(['patient_id', 'labtrain_id', 'request_nr'], 'like', '%' . $request->string('identifier') . '%'));
+        }
 
         if ($request->filled('notify')) {
             $query = $query->where('notify', filter_var($request->input('notify'), FILTER_VALIDATE_BOOL));
