@@ -50,6 +50,7 @@ class LaravelSaltServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
         Relation::morphMap([
             'flow' => Flow::class,
             'flow-error' => FlowError::class,

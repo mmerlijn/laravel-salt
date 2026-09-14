@@ -321,10 +321,13 @@ class Flow extends Model
                 $task = array_find_key(config('laravel_salt.tasks', []), fn($item) => $item == $task);
             }
             FlowStepLog::create([...array_filter($this->withoutRelations()->toArray(),
-                fn($k) => $k != 'id' && $k != 'created_at' && $k != 'updated_at', ARRAY_FILTER_USE_KEY),
+                fn($k) => !in_array($k, ['id', 'created_at', 'update_at', 'try_after', 'request_at', 'response_at']), ARRAY_FILTER_USE_KEY),
                 ...[
                     'flow_id' => $this->id,
                     'task' => $task,
+                    'try_after' => $this->try_after,
+                    'request_at' => $this->request_at,
+                    'response_at' => $this->response_at,
                 ]
             ]);
         } catch (\Exception|\Error $e) {
