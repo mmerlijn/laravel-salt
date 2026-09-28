@@ -49,7 +49,7 @@ class CreateRequestOrganziationCombination
             if ($organization) {
                 $this->o = $organization;
             }
-            if ($this->r and $this->o) {
+            if ($this->r and $this->o and $this->o->agbcode != $this->r->agbcode) {
                 $this->o->members()->syncWithoutDetaching($this->r->agbcode);
             }
 
