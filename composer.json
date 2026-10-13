@@ -1,6 +1,6 @@
 {
   "name": "mmerlijn/laravel-salt",
-    "description": "All tools for salt in one package",
+  "description": "All tools for salt in one package",
   "license": "MIT",
   "type": "library",
   "require-dev": {
@@ -10,13 +10,13 @@
     "orchestra/testbench": "11.x-dev"
   },
   "require": {
-    "mmerlijn/msg-repo": "^3.9.8",
+    "mmerlijn/msg-repo": "^4.0",
     "php": "^8.5",
     "illuminate/support": "^13.0",
     "ext-dom": "*",
     "ext-curl": "*",
     "mmerlijn/laravel-postcode": "^3.0",
-    "mmerlijn/msg-hl7": "^3.9"
+    "mmerlijn/msg-hl7": "^4.0"
   },
   "autoload": {
     "psr-4": {
