@@ -58,5 +58,6 @@ return [
         'test' => '',
         'request' => '',
         'getCaregiver' => '',
-    ]
+    ],
+    'visible_for_groups' => [],
 ];

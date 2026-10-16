@@ -52,6 +52,7 @@ return new class extends Migration {
             $table->timestamp('email_validated_at')->nullable();
             $table->unsignedInteger('contact_id')->nullable()->comment('link naar db_salt12.contact');
             $table->unsignedInteger('labtrain_id')->nullable()->comment('link naar labtrain patientnr');
+            $table->json('visible_for')->nullable();
             $table->unsignedSmallInteger('created_by')->nullable();
             $table->unsignedSmallInteger('updated_by')->nullable();
             $table->timestamps();

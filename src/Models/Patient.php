@@ -4,6 +4,7 @@ namespace mmerlijn\LaravelSalt\Models;
 
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Attributes\UseResource;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Validator;
 use mmerlijn\LaravelSalt\Actions\FindOrCreatePatient;
 use mmerlijn\LaravelSalt\Casts\PhoneCast;
 use mmerlijn\LaravelSalt\Http\Resources\Patient\PatientResource;
+use mmerlijn\LaravelSalt\Models\Scopes\VisibleForScope;
 use mmerlijn\LaravelSalt\Models\Traits\AccessLogsTrait;
 use mmerlijn\LaravelSalt\Models\Traits\AddressModelTrait;
 use mmerlijn\LaravelSalt\Models\Traits\CanBeLockedTrait;
@@ -77,7 +79,7 @@ use Workbench\Database\Factories\PatientFactory;
  * @property int $contact_id
  * @property int $labtrain_id
  */
-#[ObservedBy(PatientObserver::class), UseResource(PatientResource::class)]
+#[ObservedBy(PatientObserver::class), UseResource(PatientResource::class), ScopedBy(VisibleForScope::class)]
 class Patient extends Model
 {
     use Notifiable, HasFactory, SoftDeletes, NameModelTrait, AddressModelTrait,
