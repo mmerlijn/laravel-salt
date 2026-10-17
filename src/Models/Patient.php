@@ -27,6 +27,7 @@ use mmerlijn\LaravelSalt\Models\Traits\CanHaveAppointmentTrait;
 use mmerlijn\LaravelSalt\Models\Traits\CanHaveNotesTrait;
 use mmerlijn\LaravelSalt\Models\Traits\FlowModelTrait;
 use mmerlijn\LaravelSalt\Models\Traits\NameModelTrait;
+use mmerlijn\LaravelSalt\Models\Traits\VisibleForTrait;
 use mmerlijn\LaravelSalt\Observers\PatientObserver;
 use mmerlijn\LaravelSalt\Rules\Bsn;
 use mmerlijn\msgRepo\Address;
@@ -83,7 +84,7 @@ use Workbench\Database\Factories\PatientFactory;
 class Patient extends Model
 {
     use Notifiable, HasFactory, SoftDeletes, NameModelTrait, AddressModelTrait,
-        AccessLogsTrait, CanHaveAppointmentTrait, CanHaveNotesTrait, CanBeLockedTrait, FlowModelTrait;
+        AccessLogsTrait, CanHaveAppointmentTrait, CanHaveNotesTrait, CanBeLockedTrait, FlowModelTrait, VisibleForTrait;
 
 
     protected $guarded = [];
@@ -111,11 +112,6 @@ class Patient extends Model
     /*
      * Relations
      * */
-    public function visibles(): MorphMany
-    {
-        return $this->morphMany(Visible::class, 'visibleable');
-    }
-
     public function action(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(PatientAction::class, 'id', 'id');
