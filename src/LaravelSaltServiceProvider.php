@@ -16,6 +16,7 @@ use mmerlijn\LaravelSalt\Jobs\QueueHeartBeatJob;
 use mmerlijn\LaravelSalt\Models\Flow;
 use mmerlijn\LaravelSalt\Models\FlowError;
 use mmerlijn\LaravelSalt\Models\FlowStepLog;
+use mmerlijn\LaravelSalt\Models\Patient;
 use mmerlijn\LaravelSalt\Models\Requester;
 
 class LaravelSaltServiceProvider extends ServiceProvider
@@ -55,6 +56,7 @@ class LaravelSaltServiceProvider extends ServiceProvider
             'flow' => Flow::class,
             'flow-error' => FlowError::class,
             'requester' => Requester::class,
+            'patient' => Patient::class,
         ]);
         $this->loadRoutesFrom(__DIR__ . '/../routes/laravel-salt.php');
 

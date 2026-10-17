@@ -21,7 +21,7 @@ class VisibleForScope implements Scope
         }
         foreach (config('laravel_salt.visible_for_groups', []) as $group) {
             if (auth()->user()->can('visible_' . $group)) {
-                $builder->whereJsonContains('visible_for', $group);
+                $builder->has('visibles');
             }
         }
 

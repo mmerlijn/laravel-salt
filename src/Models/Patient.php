@@ -78,7 +78,6 @@ use Workbench\Database\Factories\PatientFactory;
  * @property string $email_ext
  * @property int $contact_id
  * @property int $labtrain_id
- * @property array $visible_for
  */
 #[ObservedBy(PatientObserver::class), UseResource(PatientResource::class), ScopedBy(VisibleForScope::class)]
 class Patient extends Model
@@ -112,6 +111,11 @@ class Patient extends Model
     /*
      * Relations
      * */
+    public function visibles(): MorphMany
+    {
+        return $this->morphMany(Visible::class, 'visibleable');
+    }
+
     public function action(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(PatientAction::class, 'id', 'id');

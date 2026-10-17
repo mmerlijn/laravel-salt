@@ -52,7 +52,6 @@ return new class extends Migration {
             $table->timestamp('email_validated_at')->nullable();
             $table->unsignedInteger('contact_id')->nullable()->comment('link naar db_salt12.contact');
             $table->unsignedInteger('labtrain_id')->nullable()->comment('link naar labtrain patientnr');
-            $table->json('visible_for')->nullable();
             $table->unsignedSmallInteger('created_by')->nullable();
             $table->unsignedSmallInteger('updated_by')->nullable();
             $table->timestamps();
@@ -120,6 +119,12 @@ return new class extends Migration {
             $table->primary(['organization_agbcode', 'requester_agbcode']);
         });
 
+        Schema::create('visibles', function (Blueprint $table) {
+            $table->enum('visibleable_type', LockTypeEnum::database());
+            $table->unsignedBigInteger('visibleable_id');
+            $table->string('group', 8);
+            $table->timestamps();
+        });
         Schema::create('tool_uzovi', function (Blueprint $table) {
             $table->string('code', 4)->primary();
             $table->string('name', 255);
