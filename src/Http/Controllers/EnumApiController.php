@@ -13,14 +13,16 @@ class EnumApiController extends Controller
     public function __invoke(Request $request, string $enum)
     {
         try {
-            $enum = "App\\Enums\\" . $enum;
-            if (!class_exists($enum)) {
-                $enum = "\\mmerlijn\\LaravelSalt\\Enums\\" . $enum;
-                if (!class_exists($enum)) {
-                    throw new \Exception("Enum {$enum} not found");
+
+            $enumClass = "App\\Enums\\" . $enum;
+
+            if (!class_exists($enumClass)) {
+                $enumClass = "\\mmerlijn\\LaravelSalt\\Enums\\" . $enum;
+                if (!class_exists($enumClass)) {
+                    throw new \Exception("Enum {$enumClass} not found");
                 }
             }
-            return $enum::collection();
+            return $enumClass::collection();
         } catch (\Throwable $th) {
             return [];
         }
