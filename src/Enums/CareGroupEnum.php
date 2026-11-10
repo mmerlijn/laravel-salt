@@ -12,6 +12,7 @@ enum CareGroupEnum: string
     case ROHA = "ROHA";
     case SAG = "SAG";
     case HONK = "HONK";
+    case ZMC = "ZMC";
     case _ = "_";
     case ARTS_EN_ZORG = "ARTS_EN_ZORG";
     case ZORG_VOOR_ZUID = 'ZORG_VOOR_ZUID';
@@ -23,6 +24,7 @@ enum CareGroupEnum: string
             CareGroupEnum::ROHA => 'ROHA',
             CareGroupEnum::SAG => 'SAG',
             CareGroupEnum::HONK => 'HONK',
+            CareGroupEnum::ZMC => 'ZMC',
             CareGroupEnum::ARTS_EN_ZORG => 'Arts en Zorg',
             CareGroupEnum::ZORG_VOOR_ZUID => 'Zorg voor Zuid',
             CareGroupEnum::_ => ''
@@ -38,6 +40,7 @@ enum CareGroupEnum: string
             'HONK' => 'HONK',
             'ARTS_EN_ZORG' => 'Arts en Zorg',
             'ZORG_VOOR_ZUID' => 'Zorg voor Zuid',
+            'ZMC' => 'ZMC',
             "_" => "",
         ];
     }
